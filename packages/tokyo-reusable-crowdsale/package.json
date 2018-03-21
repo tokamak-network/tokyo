@@ -1,6 +1,6 @@
 {
   "name": "tokyo-reusable-crowdsale",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "reusable crowdsale contract",
   "main": "truffle-config.js",
   "scripts": {
