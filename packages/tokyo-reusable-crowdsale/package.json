@@ -1,0 +1,46 @@
+{
+  "name": "tokyo-reusable-crowdsale",
+  "version": "1.0.0",
+  "description": "reusable crowdsale contract",
+  "main": "truffle-config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Onther-Tech/tokyo-reusable-crowdsale.git"
+  },
+  "keywords": [
+    "tokyo"
+  ],
+  "author": "4000D",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Onther-Tech/tokyo-reusable-crowdsale/issues"
+  },
+  "homepage": "https://github.com/Onther-Tech/tokyo-reusable-crowdsale#readme",
+  "devDependencies": {
+    "chai-bignumber": "^2.0.2",
+    "eslint-config-airbnb": "^16.1.0",
+    "rimraf": "^2.6.2"
+  },
+  "dependencies": {
+    "babel-eslint": "^8.1.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-1": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "bignumber.js": "^5.0.0",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "dotenv": "^4.0.0",
+    "eslint": "^4.15.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "ganache-core": "^2.0.2",
+    "moment": "^2.20.1",
+    "sprintf-js": "^1.1.1",
+    "truffle-contract": "^3.0.1",
+    "truffle-hdwallet-provider": "https://github.com/cemozerr/truffle-hdwallet-provider/tarball/master"
+  }
+}

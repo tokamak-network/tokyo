@@ -1,0 +1,68 @@
+{
+  "name": "tokyo-solidity-template",
+  "version": "1.0.0-rc.4",
+  "description": "Make solidity contract based on user input",
+  "main": "dist/index.js",
+  "bin": "bin.js",
+  "scripts": {
+    "build": "rimraf dist && babel src -d dist",
+    "test": "mocha --require babel-polyfill --require babel-register --reporter spec||exit 0",
+    "test:verbose": "VERBOSE=true npm run test",
+    "test:watch": "VERBOSE=true mocha --require babel-polyfill --require babel-register --watch",
+    "postinstall": "postinstall-build dist --script build",
+    "lint": "npm run lint:eslint",
+    "lint:eslint": "eslint --fix {src,test,static}/**/*.js",
+    "submodules:reinstall": "npm run submodules:uninstall && npm run submodules:install",
+    "submodules:uninstall": "npm uninstall tokyo-schema tokyo-test-data tokyo-reusable-crowdsale",
+    "submodules:install": "npm install submodules/tokyo-schema submodules/tokyo-test-data submodules/tokyo-reusable-crowdsale"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Onther-Tech/tokyo-solidity-template.git"
+  },
+  "keywords": [
+    "tokyo"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Onther-Tech/tokyo-solidity-template/issues"
+  },
+  "homepage": "https://github.com/Onther-Tech/tokyo-solidity-template#readme",
+  "dependencies": {
+    "bignumber.js": "^5.0.0",
+    "commander": "^2.14.1",
+    "mem-fs": "^1.1.3",
+    "mem-fs-editor": "^4.0.0",
+    "mkdirp": "^0.5.1",
+    "moment": "^2.20.1",
+    "ncp": "^2.0.0",
+    "postinstall-build": "^5.0.1",
+    "serialize-javascript": "^1.4.0",
+    "tokyo-reusable-crowdsale": "^1.0.0",
+    "tokyo-schema": "^1.0.0-rc.1",
+    "tokyo-test-data": "^1.0.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.2.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-1": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "chai-bignumber": "^2.0.2",
+    "clean-webpack-plugin": "^0.1.18",
+    "eslint": "^4.18.2",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "mocha": "^5.0.3",
+    "rimraf": "^2.6.2",
+    "truffle-hdwallet-provider": "https://github.com/cemozerr/truffle-hdwallet-provider/tarball/master"
+  },
+  "directories": {
+    "test": "test"
+  }
+}

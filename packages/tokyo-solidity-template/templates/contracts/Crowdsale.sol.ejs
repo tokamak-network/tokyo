@@ -1,0 +1,48 @@
+<%
+  const parentsList = parseResult.crowdsale.parentsList;
+  const importStatements = parseResult.crowdsale.importStatements;
+-%>
+<%- include("partials/version.ejs") -%>
+
+<%- writeImportStatements() %>
+
+contract <%- helper.getCrowdsaleName(parseResult) -%> is <%- parentsList.join(", ") %> {
+
+  bool public initialized;
+
+  // constructor parameters are left padded bytes32.
+<% writeConstructor() -%>
+
+
+  function parseBool(bytes32 b) internal pure returns (bool) {
+    return b == 0x1;
+  }
+
+  function parseUint(bytes32 b) internal pure returns (uint) {
+    return uint(b);
+  }
+
+  function parseAddress(bytes32 b) internal pure returns (address) {
+    return address(b & 0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff);
+  }
+
+  function generateTokens(uint256 _targetTotalSupply) internal {
+<%- parseResult.codes.crowdsale.generateTokens -%>
+  }
+
+  function init(bytes32[] args) public {
+<%- parseResult.codes.crowdsale.init -%>
+  }
+}
+
+<%
+  function writeImportStatements() {
+    return importStatements.join("\n");
+  }
+%>
+
+<%
+  function writeConstructor() { %>
+  function <%- helper.getCrowdsaleName(parseResult) -%>(bytes32[<%- parseResult.crowdsaleConstructorArgumentLength -%>] args) <%- helper.writeSuperModifiers(parseResult.crowdsale.parentsList, parseResult.constructors) %> public {}
+  <% }
+%>

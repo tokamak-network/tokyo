@@ -1,0 +1,45 @@
+<%
+  const parentsList = parseResult.token.parentsList;
+  const importStatements = parseResult.token.importStatements;
+-%>
+<%- include("partials/version.ejs") -%>
+<%- writeImportStatements() -%>
+
+contract <%- helper.getTokenName(parseResult) -%> is <%- parentsList.join(", ") %> { <%
+    if (input.token.token_type.is_minime) {
+      writeMiniMeTokenBody();
+    } else {
+      writeZeppelinTokenBody();
+    }
+  %>
+}
+
+<%
+  function writeImportStatements() { %>
+<%- importStatements.join("\n") %>
+  <% }
+%>
+
+
+<%
+  function writeZeppelinTokenBody() { %>
+  string public name = "<%= input.token.token_name %>";
+  string public symbol = "<%= input.token.token_symbol %>";
+  uint8 public decimals = <%= input.token.decimals %>; <%
+  }
+%>
+
+
+<%
+  function writeMiniMeTokenBody() { %>
+    function <%- helper.getTokenName(parseResult) -%>(address _tokenFactory)
+      MiniMeToken(
+        _tokenFactory,
+        0x0,                     // no parent token
+        0,                       // no snapshot block number from parent
+        "<%= input.token.token_name %>",  // Token name
+        <%= input.token.decimals %>,                      // Decimals
+        "<%= input.token.token_symbol %>",                   // Symbol
+        true                     // Enable transfers
+      ) {} <% }
+%>

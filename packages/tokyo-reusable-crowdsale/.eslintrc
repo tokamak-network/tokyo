@@ -1,0 +1,54 @@
+{
+    "env": {
+        "browser": false,
+        "es6": true,
+        "node": true,
+        "mocha": true
+    },
+    "extends": "airbnb/base",
+    "parser": "babel-eslint",
+    "rules": {
+        // indentation
+        "indent": [ 1, 2 ],
+
+        // spacing
+        "template-curly-spacing": [ 2, "always" ],
+        "array-bracket-spacing": [ 2, "always" ],
+        "object-curly-spacing": [ 2, "always" ],
+        "computed-property-spacing": [ 2, "always" ],
+        "no-multiple-empty-lines": [ 2, { "max": 1, "maxEOF": 0, "maxBOF": 0 } ],
+
+        // strings
+        "quotes": [ 2, "double", "avoid-escape" ],
+
+        // code arrangement matter
+        "no-use-before-define": [ 2, { "functions": false } ],
+
+        // make it meaningful
+        "prefer-const": 1,
+
+        // keep it simple
+        "complexity": [ 1, 6 ],
+
+        // Consisten return
+        "consistent-return": 0,
+
+        "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/*.test.js", "**/*.spec.js", "**/compile.js", "**/test/*.js"]}],
+
+        // fuzex
+        "no-await-in-loop": "off",
+        "no-restricted-syntax": "off",
+        "no-mixed-operators": "off",
+        "one-var-declaration-per-line": ["error", "initializations"],
+        "one-var": "off",
+        "func-names": ["error", "never"],
+        "no-underscore-dangle": "off",
+        "no-console": "off"
+    },
+    "globals": {
+        "artifacts": true,
+        "web3": true,
+        "contract": true,
+        "assert": true
+    }
+}

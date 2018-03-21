@@ -1,0 +1,123 @@
+const moment = require("moment");
+const get = require("lodash/get");
+const ethUtils = require("ethereumjs-util");
+const schema = require("tokyo-schema").default;
+
+const BigNumber = web3.BigNumber;
+const { toBuffer, setLengthLeft, addHexPrefix, isValidAddress } = ethUtils;
+
+/**
+ * Contract Artifacts
+ */
+const KYC = artifacts.require("./KYC.sol");
+const Vault = artifacts.require("./MultiHolderVault.sol");
+const Locker = artifacts.require("./Locker.sol");
+const Multisig = artifacts.require("./MultiSigWallet.sol");
+const Token = artifacts.require("./<%- helper.getTokenName(parseResult) -%>.sol");
+const Crowdsale = artifacts.require("./<%- helper.getCrowdsaleName(parseResult) -%>.sol");
+
+module.exports = async function (deployer, network, accounts) {
+  console.log(accounts)
+  const address = {};
+  const { value, error } = schema.validate(getInput());
+  const input = value;
+
+  const data = { address, input };
+
+  // contract instance
+  let kyc, vault, locker, multisigs, token, crowdsale;
+
+  /**
+   * Deploy contracts sequentually
+   *  1. KYC / Vault / Locker / Multisigs(optional)
+   *  2. Token
+   *  3. Crowdsale
+   *  4. Initialize contracts
+   *   - transfer ownerships of vault, token, lcoker to crowdsale
+   *   - Crowdsale.init()
+   */
+
+  deployer.deploy([
+    KYC,
+    [
+      Vault,
+      "<%- input.sale.new_token_owner -%>",
+      <%- input.sale.coeff %>
+    ],
+    [
+      Token,
+      // token arguments...
+      <%- helper.writeTokenArguments(input, 3) %>
+    ]
+  ]).then(async () => {
+    kyc = await KYC.deployed();
+    vault = await Vault.deployed();
+    token = await Token.deployed();
+
+    address.kyc = kyc.address;
+    address.vault = vault.address;
+    address.token = token.address;
+  }).then(async () => {
+    multisigs = await Promise.all([
+      <%- helper.writeMultisigArguments(input, 3) %>
+    ]);
+
+    address.multisigs = multisigs.map(m => m.address);
+    console.log("Multisigs :", address.multisigs.join(", "));
+  }).then(async () => deployer.deploy([
+    [
+      Locker,
+      <%- helper.writeLockerArguments(input, 4) %>
+    ],
+  ])).then(async () => {
+    locker = await Locker.deployed();
+
+    address.locker = locker.address;
+  }).then(() => deployer.deploy([
+    [
+      Crowdsale,
+      [
+        <%- helper.writeConstructorArguments(parseResult, 4) %>
+      ].map(toLeftPaddedBuffer)
+    ]
+  ])).then(async () => {
+    crowdsale = await Crowdsale.deployed();
+
+    address.crowdsale = crowdsale.address;
+  }).then(async () => {
+    <%- parseResult.codes.migration -%>
+
+  }).then(async () => {
+    // transfer ownerships to crowdsale
+    await Promise.all([
+      vault.transferOwnership(crowdsale.address),
+      locker.transferOwnership(crowdsale.address),
+      <%- writeTransferTokenOwnership() -%>,
+    ]);
+
+  });
+};
+
+function getInput() {
+  return JSON.parse('<%- helper.serialize(rawInput) -%>');
+}
+
+function toLeftPaddedBuffer(v) {
+  if (typeof v === "boolean") {
+    v = Number(v);
+  } else if (v instanceof BigNumber) {
+    v = addHexPrefix(v.toString(16));
+  }
+
+  const buf = toBuffer(v);
+  const hex = setLengthLeft(buf, 32).toString("hex");
+  return addHexPrefix(hex);
+}
+
+
+<%
+  function writeTransferTokenOwnership() {
+    if (input.token.token_type.is_minime) return 'token.changeController(crowdsale.address)';
+    return 'token.transferOwnership(crowdsale.address)';
+  }
+%>

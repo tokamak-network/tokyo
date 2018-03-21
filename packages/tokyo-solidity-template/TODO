@@ -1,0 +1,8 @@
+1. Keywords
+  - `crowdsale`, `locker`, `multisig`
+  - `locker` & `multisig` with index number
+
+2. multisig
+  - a. parse input, updtae Parser, add Keyword for multisig
+  - b. update migration, replace `multisig` keywrod with deployed address
+  - c.
