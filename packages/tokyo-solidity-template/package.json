@@ -1,6 +1,6 @@
 {
   "name": "tokyo-solidity-template",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Make solidity contract based on user input",
   "main": "dist/index.js",
   "bin": "bin.js",
@@ -32,6 +32,7 @@
   "dependencies": {
     "bignumber.js": "^5.0.0",
     "commander": "^2.14.1",
+    "find-up": "^2.1.0",
     "mem-fs": "^1.1.3",
     "mem-fs-editor": "^4.0.0",
     "mkdirp": "^0.5.1",
