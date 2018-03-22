@@ -1,6 +1,6 @@
 {
   "name": "tokyo-solidity-template",
-  "version": "1.0.4-0",
+  "version": "1.0.4-1",
   "description": "Make solidity contract based on user input",
   "main": "dist/index.js",
   "bin": "bin.js",
