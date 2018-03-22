@@ -1,13 +1,13 @@
 {
   "name": "tokyo-schema",
-  "version": "1.0.1",
+  "version": "1.0.2-0",
   "description": "Tokyo Project, Validate the user input schema",
   "main": "dist/index.js",
   "scripts": {
+    "prepublishOnly": "npm run build",
     "build": "rimraf dist && babel src -d dist",
     "test": "mocha --require babel-polyfill --require babel-register --reporter spec||exit 0",
     "test:watch": "mocha --require babel-polyfill --require babel-register --watch",
-    "postinstall": "postinstall-build dist --script build",
     "lint": "npm run lint:eslint",
     "lint:eslint": "eslint --fix {src,test}/**"
   },
