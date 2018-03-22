@@ -2,17 +2,18 @@ import fs from "fs";
 import { resolve, join } from "path";
 import mkdirp from "mkdirp";
 import { ncp } from "ncp";
-
+import findUp from "find-up";
 import Logger from "./Logger";
 import Builder from "./Builder";
 
 const logger = new Logger(true);
 
+const defaultNodePath = findUp.sync("node_modules", { cwd: __dirname });
 const defaultTargetPath = resolve(__dirname, "../../out");
 const defaultTemplPath = resolve(__dirname, "../../templates");
 const defaultStaticPath = resolve(__dirname, "../../static");
-const defaultBaseContractPath = resolve(__dirname, "../../node_modules/tokyo-reusable-crowdsale/contracts");
-const defaultBaseTestHelperPath = resolve(__dirname, "../../node_modules/tokyo-reusable-crowdsale/test/helpers");
+const defaultBaseContractPath = resolve(defaultNodePath, "./tokyo-reusable-crowdsale/contracts");
+const defaultBaseTestHelperPath = resolve(defaultNodePath, "./tokyo-reusable-crowdsale/test/helpers");
 
 /**
  * @title Generator
