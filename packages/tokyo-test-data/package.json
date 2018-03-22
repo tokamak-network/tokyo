@@ -1,6 +1,6 @@
 {
   "name": "tokyo-test-data",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Sample test data",
   "main": "index.js",
   "scripts": {

@@ -1,6 +1,6 @@
 {
   "name": "tokyo-solidity-template",
-  "version": "1.0.4-2",
+  "version": "1.0.4",
   "description": "Make solidity contract based on user input",
   "main": "dist/index.js",
   "bin": "bin.js",
@@ -41,8 +41,8 @@
     "postinstall-build": "^5.0.1",
     "serialize-javascript": "^1.4.0",
     "tokyo-reusable-crowdsale": "^1.0.1",
-    "tokyo-schema": "^1.0.2-0",
-    "tokyo-test-data": "^1.0.1"
+    "tokyo-schema": "^1.0.2",
+    "tokyo-test-data": "^1.0.2"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

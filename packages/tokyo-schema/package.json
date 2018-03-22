@@ -1,6 +1,6 @@
 {
   "name": "tokyo-schema",
-  "version": "1.0.2-0",
+  "version": "1.0.2",
   "description": "Tokyo Project, Validate the user input schema",
   "main": "dist/index.js",
   "scripts": {
