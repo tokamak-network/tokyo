@@ -4,14 +4,10 @@ Cli for Tokyo
 ## Usage
 
 ### in Terminal
-> 1.0.0 doesn't provide npm 
 
 ```bash
-$ git clone https://github.com/Onther-Tech/tokyo.git
-$ cd tokyo && git submodule update --init --recursive
-$ npm install && npm run build
 # install tokyo as global package
-$ npm install -g .
+$ npm install -g tokyo-cli
 
 # generate CrowdSale & Token Solidity Code
 $ tokyo generate --input <tokyo_schem.json>
@@ -22,7 +18,8 @@ $ tokyo generate --i <tokyo_schem.json> --out <~/dir>
 # flattening code for verification on etherscan
 $ tokyo flatten --input <soliditycode.sol>
 
-# draw diagram ! You should compile first before draw diagram 
+# draw diagram ! You should compile first before draw diagram
+$ npm install 
 $ truffle compile
 $ tokyo draw --input <soliditycode.sol>
 
