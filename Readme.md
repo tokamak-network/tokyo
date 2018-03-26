@@ -12,7 +12,7 @@ Solidity Code Generator for ICO contracts
 ```Input Schema for Generating Solidity Contracts```
 
 ### [tokyo-solidity-template](https://github.com/Onther-Tech/tokyo/tree/master/packages/tokyo-solidity-template)
-```Generating Solidity Code Based on tokyo-reusable-crowdsale```
+```Generating Solidity Code Using tokyo-reusable-crowdsale Based on Input Data ```
 
 ### [tokyo-test-data](https://github.com/Onther-Tech/tokyo/tree/master/packages/tokyo-test-data)
-```Sample Input Schema for tokyo```
+```Sample Input Data for tokyo```
