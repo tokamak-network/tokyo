@@ -9,12 +9,10 @@ Make solidity contract based on user input
 > beta version doesn't support npm
 
 ```bash
-$ git clone https://github.com/Onther-Tech/tokyo-solidity-template.git
-$ cd tokyo-solidity-template && git submodule update --init --recursive
-$ npm install && npm run build
+$ npm install tokyo-solidity-template
 
 # install tokyo-solidity-template as global package
-$ npm install -g .
+$ npm install -g tokyo-solidity-template
 
 # generate sample tokyo project
 $ tokyo-solidity-template -i ./submodules/tokyo-test-data/sample1.json
