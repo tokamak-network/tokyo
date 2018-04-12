@@ -75,6 +75,11 @@ contract StagedCrowdsale is KYCCrowdsale {
       return false;
     }
 
+    for (uint8 i = 0; i < periods.length; i++) {
+      if (periods[i].endTime <= periods[i].startTime) {
+        return false;
+      }
+    }
     // check periods are overlapped.
     for (uint8 i = 0; i < periods.length - 1; i++) {
       if (periods[i].endTime >= periods[i + 1].startTime) {
@@ -122,7 +127,7 @@ contract StagedCrowdsale is KYCCrowdsale {
 
     require(onSale);
 
-    Period storage p = periods[currentPeriod];
+    Period memory p = periods[currentPeriod];
 
     // Check kyc if needed for this period
     if (p.kyc) {
