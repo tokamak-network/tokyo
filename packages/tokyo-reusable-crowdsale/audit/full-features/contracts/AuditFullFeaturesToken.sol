@@ -1,8 +1,9 @@
 pragma solidity^0.4.18;
 
 import "./base/minime/MiniMeToken.sol";
+import "./base/token/BurnableMiniMeToken.sol";
   
-contract AuditFullFeaturesToken is MiniMeToken { 
+contract AuditFullFeaturesToken is MiniMeToken, BurnableMiniMeToken { 
     function AuditFullFeaturesToken(address _tokenFactory)
       MiniMeToken(
         _tokenFactory,
