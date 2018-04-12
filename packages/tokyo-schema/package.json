@@ -9,7 +9,8 @@
     "test": "mocha --require babel-polyfill --require babel-register --reporter spec||exit 0",
     "test:watch": "mocha --require babel-polyfill --require babel-register --watch",
     "lint": "npm run lint:eslint",
-    "lint:eslint": "eslint --fix {src,test}/**"
+    "lint:eslint": "eslint --fix {src,test}/**",
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
