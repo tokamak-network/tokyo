@@ -47,6 +47,7 @@ contract StagedCrowdsale is KYCCrowdsale {
       && len == _maxPurchaseLimits.length
       && len == _minPurchaseLimits.length
       && len == _kycs.length);
+    require(validPeriods());
 
     for (uint i = 0; i < len; i++) {
       uint periodCap;
@@ -67,8 +68,6 @@ contract StagedCrowdsale is KYCCrowdsale {
         weiRaised: 0
       }));
     }
-
-    /* require(validPeriods()); */
   }
 
   function validPeriods() internal view returns (bool) {
