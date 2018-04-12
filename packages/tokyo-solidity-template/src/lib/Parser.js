@@ -21,6 +21,7 @@ export default class Parser {
     this.input = input;
   }
 
+  /* eslint-disable complexity */
   parse() {
     const { input } = this;
 
@@ -119,6 +120,11 @@ ${ writeTabs(tab2) });
     if (input.token.token_type.is_minime) {
       token.parentsList.push("MiniMeToken");
       token.importStatements.push("import \"./base/minime/MiniMeToken.sol\";");
+
+      if (input.token.token_option.burnable) {
+        token.parentsList.push("BurnableMiniMeToken");
+        token.importStatements.push("import \"./base/token/BurnableMiniMeToken.sol\";");
+      }
 
       crowdsale.parentsList.push("MiniMeBaseCrowdsale");
       crowdsale.importStatements.push("import \"./base/crowdsale/MiniMeBaseCrowdsale.sol\";");
@@ -322,4 +328,5 @@ ${ writeTabs(tab2) }nextTokenOwner = _nextTokenOwner;
       crowdsaleConstructorArgumentLength,
     };
   }
+  /* eslint-enable complexity */
 }
