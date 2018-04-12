@@ -48,6 +48,10 @@
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "mocha": "^5.0.0",
+    "post-commit": "^0.0.1",
     "rimraf": "^2.6.2"
-  }
+  },
+  "post-commit": [
+    "build"
+  ]
 }

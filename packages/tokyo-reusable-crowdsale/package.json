@@ -25,6 +25,7 @@
     "eslint-plugin-import": "^2.10.0",
     "ethereumjs-util": "^5.1.5",
     "lodash": "^4.17.5",
+    "post-commit": "^0.0.1",
     "rimraf": "^2.6.2",
     "tokyo-schema": "^1.0.3"
   },
@@ -46,5 +47,8 @@
     "truffle-contract": "^3.0.1",
     "truffle-hdwallet-provider": "https://github.com/cemozerr/truffle-hdwallet-provider/tarball/master",
     "web3": "^0.20.6"
-  }
+  },
+  "post-commit": [
+    "build"
+  ]
 }
