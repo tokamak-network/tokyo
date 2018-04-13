@@ -8,12 +8,11 @@ import Builder from "./Builder";
 
 const logger = new Logger(true);
 
-const defaultNodePath = findUp.sync("node_modules", { cwd: __dirname });
 const defaultTargetPath = resolve(__dirname, "../../out");
 const defaultTemplPath = resolve(__dirname, "../../templates");
 const defaultStaticPath = resolve(__dirname, "../../static");
-const defaultBaseContractPath = resolve(defaultNodePath, "./tokyo-reusable-crowdsale/contracts");
-const defaultBaseTestHelperPath = resolve(defaultNodePath, "./tokyo-reusable-crowdsale/test/helpers");
+const defaultBaseContractPath = findUp.sync("tokyo-reusable-crowdsale/contracts", { cwd: __dirname });
+const defaultBaseTestHelperPath = findUp.sync("tokyo-reusable-crowdsale/test/helpers", { cwd: __dirname });
 
 /**
  * @title Generator
