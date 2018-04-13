@@ -2,7 +2,8 @@
   "private": true,
   "workspaces": [
     "packages/*",
-    "packages/tokyo-solidity-template/test_*"
+    "packages/tokyo-solidity-template/test_*",
+    "packages/tokyo-reusable-crowdsale/audit*"
   ],
   "scripts": {
     "bootstrap": "lerna bootstrap",
