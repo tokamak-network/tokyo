@@ -25,7 +25,7 @@ contract("KYC", async ([ owner, admin, investor1, investor2, ...accounts ]) => {
   let kyc;
 
   before(async () => {
-    kyc = await KYC.deployed();
+    kyc = await KYC.new();
   });
 
   it("only owner can add admin", async () => {
