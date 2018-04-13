@@ -31,6 +31,10 @@ yanr 1.5.1
 # clone repository
 $ git clone https://github.com/Onther-Tech/tokyo.git && cd tokyo
 
+# clear node modules if already installed
+$ rm -rf node_modules # remove root dependencies
+$ rm -rf packages/tokyo-*/node_modules # remove package dependencies
+
 # install node modules with yarn
 $ yarn install
 ```
