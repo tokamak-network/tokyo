@@ -150,11 +150,7 @@ contract StagedCrowdsale is KYCCrowdsale {
     }
 
     // get `toFund` with the cap of the sale
-    uint256 toFund = super.calculateToFund(_beneficiary, _weiAmount);
-
-    uint128(toFund.add(uint256(p.weiRaised)));
-
-    return toFund;
+    return super.calculateToFund(_beneficiary, _weiAmount);
   }
 
   function buyTokensPostHook(address _beneficiary, uint256 _toFund) internal {

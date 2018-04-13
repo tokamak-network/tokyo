@@ -427,7 +427,7 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
         .should.be.bignumber.equal(tokenBalance.add(tokenAmount));
 
       (await crowdsale.weiRaised())
-        .should.be.bignumber.equal(ether(4000));
+        .should.be.bignumber.equal(ether(4000)); // max cap reached
     });
   });
 
