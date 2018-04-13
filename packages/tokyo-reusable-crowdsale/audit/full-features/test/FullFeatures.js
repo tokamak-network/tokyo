@@ -233,7 +233,7 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
     });
   });
 
-  describe("After stage 0 finished (stage 1 not started)", async () => {
+  describe("After stage 0 finished (stage 1 not started yet)", async () => {
     const targetTime = (input.sale.stages[ 0 ].end_time + input.sale.stages[ 1 ].start_time) / 2;
 
     it(`increase time to ${ targetTime }`, async () => {
@@ -257,7 +257,10 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
   });
 
   describe("After stage 1 started (with time bonus 1)", async () => {
-    const targetTime = input.sale.stages[ 1 ].start_time;
+    const stageIndex = 1;
+    const targetTime = input.sale.stages[ stageIndex ].start_time;
+    const stageMaxPurchaseLimit = input.sale.stages[ stageIndex ].max_purchase_limit;
+    const stageMinPurchaseLimit = input.sale.stages[ stageIndex ].min_purchase_limit;
 
     it(`increase time to ${ targetTime }`, async () => {
       await increaseTimeTo(targetTime)
@@ -277,6 +280,22 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
 
       await sendTransaction({
         from: other, to: crowdsale.address, value: investAmount, gas,
+      }).should.be.rejectedWith(EVMThrow);
+    });
+
+    it("reject buying tokens under stage min purchase", async () => {
+      const investAmount = stageMinPurchaseLimit.mul(0.99999);
+
+      await sendTransaction({
+        from: investor1, to: crowdsale.address, value: investAmount, gas,
+      }).should.be.rejectedWith(EVMThrow);
+    });
+
+    it("reject buying tokens over stage max purchase", async () => {
+      const investAmount = stageMaxPurchaseLimit.mul(1.00001);
+
+      await sendTransaction({
+        from: investor1, to: crowdsale.address, value: investAmount, gas,
       }).should.be.rejectedWith(EVMThrow);
     });
 
@@ -430,6 +449,7 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
       lockerAmounts.should.be.bignumber.equal(totalSupply.mul(lockerRatio).div(coeff));
       saleAmounts.should.be.bignumber.equal(totalSupply.mul(saleRatio).div(coeff));
 
+      /* eslint-disable camelcase */
       for (const { token_holder, token_ratio } of tokenDistributions) {
         if (![ "crowdsale", "locker" ].includes(token_holder)) {
           const tokenAmounts = await token.balanceOf(token_holder);
@@ -437,6 +457,7 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
             .equal(totalSupply.mul(token_ratio).div(coeff));
         }
       }
+      /* eslint-enable camelcase */
     });
   });
 });
