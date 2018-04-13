@@ -24,10 +24,10 @@ const should = require("chai")
 const KYC = artifacts.require("./KYC.sol");
 const Vault = artifacts.require("./MultiHolderVault.sol");
 const Locker = artifacts.require("./Locker.sol");
-const Token = artifacts.require("./FullFeaturesToken.sol");
-const Crowdsale = artifacts.require("./FullFeaturesCrowdsale.sol");
+const Token = artifacts.require("./AuditFullFeaturesToken.sol");
+const Crowdsale = artifacts.require("./AuditFullFeaturesCrowdsale.sol");
 
-contract("FullFeaturesCrowdsale", async ([ owner, other, investor1, investor2, investor3, ...accounts ]) => {
+contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investor2, investor3, ...accounts ]) => {
   // contract instances
   let kyc, vault, locker, token, crowdsale;
 
