@@ -58,7 +58,11 @@
         },
         {
           "token_holder": "locker",
-          "token_ratio": "200"
+          "token_ratio": "100"
+        },
+        {
+          "token_holder": "0x557678cf28594495ef4b08a6447726f931f8d787",
+          "token_ratio": "100"
         }
       ],
       "ether": [
