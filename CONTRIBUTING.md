@@ -11,7 +11,7 @@ Wrong generatorToken process in Parser and crowdsale template
 ```
 
 
-If a single commit fix more than 1 package, no prefix is required.
+If a single commit fix more than 1 package, you can use any meaningful prefix you want
 
 Example:
 ```
