@@ -32,7 +32,7 @@ contract StagedCrowdsale is KYCCrowdsale {
   function initPeriods(
     uint32[] _startTimes,
     uint32[] _endTimes,
-    uint128[] _caps,
+    uint128[] _capRatios,
     uint128[] _maxPurchaseLimits,
     uint128[] _minPurchaseLimits,
     bool[] _kycs)
@@ -43,7 +43,7 @@ contract StagedCrowdsale is KYCCrowdsale {
     require(periods.length == 0);
     require(len == _startTimes.length
       && len == _endTimes.length
-      && len == _caps.length
+      && len == _capRatios.length
       && len == _maxPurchaseLimits.length
       && len == _minPurchaseLimits.length
       && len == _kycs.length);
@@ -53,8 +53,8 @@ contract StagedCrowdsale is KYCCrowdsale {
 
       uint periodCap;
 
-      if (_caps[i] != 0) {
-        periodCap = cap.mul(uint(_caps[i])).div(coeff);
+      if (_capRatios[i] != 0) {
+        periodCap = cap.mul(uint(_capRatios[i])).div(coeff);
       } else {
         periodCap = 0;
       }
