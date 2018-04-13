@@ -47,9 +47,10 @@ contract StagedCrowdsale is KYCCrowdsale {
       && len == _maxPurchaseLimits.length
       && len == _minPurchaseLimits.length
       && len == _kycs.length);
-    require(validPeriods());
 
     for (uint i = 0; i < len; i++) {
+      require(_endTimes[i] >= _startTimes[i]);
+
       uint periodCap;
 
       if (_caps[i] != 0) {
@@ -68,6 +69,8 @@ contract StagedCrowdsale is KYCCrowdsale {
         weiRaised: 0
       }));
     }
+
+    require(validPeriods());
   }
 
   function validPeriods() internal view returns (bool) {
@@ -75,11 +78,6 @@ contract StagedCrowdsale is KYCCrowdsale {
       return false;
     }
 
-    for (uint8 i = 0; i < periods.length; i++) {
-      if (periods[i].endTime <= periods[i].startTime) {
-        return false;
-      }
-    }
     // check periods are overlapped.
     for (uint8 i = 0; i < periods.length - 1; i++) {
       if (periods[i].endTime >= periods[i + 1].startTime) {
