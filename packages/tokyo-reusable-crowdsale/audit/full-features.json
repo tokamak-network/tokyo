@@ -80,7 +80,7 @@
       {
         "start_time": "2018/05/23 00:00:00",
         "end_time": "2018/05/24 00:00:00",
-        "cap_ratio": "100",
+        "cap_ratio": "200",
         "max_purchase_limit": "400000000000000000000",
         "min_purchase_limit": "100000000000000",
         "kyc": true
@@ -89,13 +89,13 @@
         "start_time": "2018/05/25 00:00:00",
         "end_time": "2018/05/27 00:00:00",
         "cap_ratio": "0",
-        "max_purchase_limit": "4000000000000000000000",
-        "min_purchase_limit": "100000000000000000",
+        "max_purchase_limit": "0",
+        "min_purchase_limit": "0",
         "kyc": true
       }
     ],
     "valid_purchase": {
-      "max_purchase_limit": "500000000000000000000",
+      "max_purchase_limit": "2000000000000000000000",
       "min_purchase_limit": "10000000000000000",
       "block_interval": 20
     },

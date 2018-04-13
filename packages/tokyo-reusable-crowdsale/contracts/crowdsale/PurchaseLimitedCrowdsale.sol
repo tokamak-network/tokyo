@@ -16,8 +16,7 @@ contract PurchaseLimitedCrowdsale is BaseCrowdsale {
   }
 
   function calculateToFund(address _beneficiary, uint256 _weiAmount) internal view returns (uint256) {
-    uint256 toFund;
-    toFund = super.calculateToFund(_beneficiary, _weiAmount);
+    uint256 toFund = super.calculateToFund(_beneficiary, _weiAmount);
 
     if (purchaseFunded[_beneficiary].add(toFund) > purchaseLimit)
       toFund = purchaseLimit.sub(purchaseFunded[_beneficiary]);
@@ -25,7 +24,8 @@ contract PurchaseLimitedCrowdsale is BaseCrowdsale {
     return toFund;
   }
 
-  function buyTokensPreHook(address _beneficiary, uint256 _toFund) internal {
+  function buyTokensPostHook(address _beneficiary, uint256 _toFund) internal {
     purchaseFunded[_beneficiary] = purchaseFunded[_beneficiary].add(_toFund);
+    super.buyTokensPostHook(_beneficiary, _toFund);
   }
 }

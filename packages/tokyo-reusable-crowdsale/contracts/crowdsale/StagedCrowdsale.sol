@@ -135,11 +135,10 @@ contract StagedCrowdsale is KYCCrowdsale {
     // check min purchase limit of the period
     require(_weiAmount >= uint(p.minPurchaseLimit));
 
-    // check max purchase limit of the period
-    if (p.maxPurchaseLimit != 0) {
-      require(_weiAmount <= uint(p.maxPurchaseLimit));
+    // reduce up to max purchase limit of the period
+    if (p.maxPurchaseLimit != 0 && _weiAmount > uint(p.maxPurchaseLimit)) {
+      _weiAmount = uint(p.maxPurchaseLimit);
     }
-
 
     // pre-calculate `toFund` with the period's cap
     if (p.cap > 0) {
@@ -153,8 +152,22 @@ contract StagedCrowdsale is KYCCrowdsale {
     // get `toFund` with the cap of the sale
     uint256 toFund = super.calculateToFund(_beneficiary, _weiAmount);
 
-    p.weiRaised = uint128(toFund.add(uint256(p.weiRaised)));
+    uint128(toFund.add(uint256(p.weiRaised)));
 
     return toFund;
+  }
+
+  function buyTokensPostHook(address _beneficiary, uint256 _toFund) internal {
+    uint8 currentPeriod;
+    bool onSale;
+
+    (currentPeriod, onSale) = getPeriodIndex();
+
+    require(onSale);
+
+    Period storage p = periods[currentPeriod];
+
+    p.weiRaised = uint128(_toFund.add(uint256(p.weiRaised)));
+    super.buyTokensPostHook(_beneficiary, _toFund);
   }
 }

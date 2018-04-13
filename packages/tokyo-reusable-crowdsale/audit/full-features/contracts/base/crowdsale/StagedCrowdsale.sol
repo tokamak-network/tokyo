@@ -32,7 +32,7 @@ contract StagedCrowdsale is KYCCrowdsale {
   function initPeriods(
     uint32[] _startTimes,
     uint32[] _endTimes,
-    uint128[] _caps,
+    uint128[] _capRatios,
     uint128[] _maxPurchaseLimits,
     uint128[] _minPurchaseLimits,
     bool[] _kycs)
@@ -43,16 +43,18 @@ contract StagedCrowdsale is KYCCrowdsale {
     require(periods.length == 0);
     require(len == _startTimes.length
       && len == _endTimes.length
-      && len == _caps.length
+      && len == _capRatios.length
       && len == _maxPurchaseLimits.length
       && len == _minPurchaseLimits.length
       && len == _kycs.length);
 
     for (uint i = 0; i < len; i++) {
+      require(_endTimes[i] >= _startTimes[i]);
+
       uint periodCap;
 
-      if (_caps[i] != 0) {
-        periodCap = cap.mul(uint(_caps[i])).div(coeff);
+      if (_capRatios[i] != 0) {
+        periodCap = cap.mul(uint(_capRatios[i])).div(coeff);
       } else {
         periodCap = 0;
       }
@@ -68,7 +70,7 @@ contract StagedCrowdsale is KYCCrowdsale {
       }));
     }
 
-    /* require(validPeriods()); */
+    require(validPeriods());
   }
 
   function validPeriods() internal view returns (bool) {
@@ -123,7 +125,7 @@ contract StagedCrowdsale is KYCCrowdsale {
 
     require(onSale);
 
-    Period storage p = periods[currentPeriod];
+    Period memory p = periods[currentPeriod];
 
     // Check kyc if needed for this period
     if (p.kyc) {
@@ -133,11 +135,10 @@ contract StagedCrowdsale is KYCCrowdsale {
     // check min purchase limit of the period
     require(_weiAmount >= uint(p.minPurchaseLimit));
 
-    // check max purchase limit of the period
-    if (p.maxPurchaseLimit != 0) {
-      require(_weiAmount <= uint(p.maxPurchaseLimit));
+    // reduce up to max purchase limit of the period
+    if (p.maxPurchaseLimit != 0 && _weiAmount > uint(p.maxPurchaseLimit)) {
+      _weiAmount = uint(p.maxPurchaseLimit);
     }
-
 
     // pre-calculate `toFund` with the period's cap
     if (p.cap > 0) {
@@ -151,8 +152,22 @@ contract StagedCrowdsale is KYCCrowdsale {
     // get `toFund` with the cap of the sale
     uint256 toFund = super.calculateToFund(_beneficiary, _weiAmount);
 
-    p.weiRaised = uint128(toFund.add(uint256(p.weiRaised)));
+    uint128(toFund.add(uint256(p.weiRaised)));
 
     return toFund;
+  }
+
+  function buyTokensPostHook(address _beneficiary, uint256 _toFund) internal {
+    uint8 currentPeriod;
+    bool onSale;
+
+    (currentPeriod, onSale) = getPeriodIndex();
+
+    require(onSale);
+
+    Period storage p = periods[currentPeriod];
+
+    p.weiRaised = uint128(_toFund.add(uint256(p.weiRaised)));
+    super.buyTokensPostHook(_beneficiary, _toFund);
   }
 }

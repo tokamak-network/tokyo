@@ -80,7 +80,7 @@ contract BaseCrowdsale is Ownable {
     TokenPurchase(msg.sender, beneficiary, toFund, tokens);
     forwardFunds(toFund);
 
-    buyTokensPostHook(beneficiary);
+    buyTokensPostHook(beneficiary, toFund);
   }
 
   /**
@@ -146,6 +146,8 @@ contract BaseCrowdsale is Ownable {
 
   /**
    * @notice calculate fund wrt sale cap. Override this function to control ether cap.
+   * @param _beneficiary address address to receive tokens
+   * @param _weiAmount uint256 amount of ether in wei
    */
   function calculateToFund(address _beneficiary, uint256 _weiAmount) internal view returns (uint256) {
     uint256 toFund;
@@ -173,7 +175,7 @@ contract BaseCrowdsale is Ownable {
   /**
    * @notice post hook for buyTokens function
    */
-  function buyTokensPostHook(address _beneficiary) internal {}
+  function buyTokensPostHook(address _beneficiary, uint256 _toFund) internal {}
 
   function finalizationFailHook() internal {
     vault.enableRefunds();
