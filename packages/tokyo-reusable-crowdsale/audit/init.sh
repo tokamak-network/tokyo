@@ -2,5 +2,5 @@
 
 for file in ./*.json ; do
   name=`basename $file .json`
-  tokyo-solidity-template -i $file -o $name
+  ../../tokyo-solidity-template/bin.js -i $file -o $name
 done

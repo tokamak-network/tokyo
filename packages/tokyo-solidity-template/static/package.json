@@ -40,6 +40,6 @@
   "devDependencies": {
     "eslint-config-airbnb": "^15.1.0",
     "rimraf": "^2.6.2",
-    "tokyo-schema": "git+https://github.com/Onther-Tech/tokyo-schema.git"
+    "tokyo-schema": "^1.0.3"
   }
 }

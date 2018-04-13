@@ -19,12 +19,4 @@ describe("Generator", () => {
     await g.write();
     remove(outputPath);
   });
-
-  it("should generate RBG", async () => {
-    const outputPath = path.resolve(__dirname, "../test_rbg_out");
-    const g = new Generator(require("tokyo-test-data/rbg.json"), outputPath);
-
-    await g.write();
-    remove(outputPath);
-  });
 });

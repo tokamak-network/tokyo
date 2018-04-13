@@ -20,3 +20,17 @@ Sample Input Data for tokyo
 
 
 ## [Contributing](./CONTRIBUTING.md)
+
+## Development
+
+#### Environment
+node 8.9.1
+yanr 1.5.1
+
+```bash
+# clone repository
+$ git clone https://github.com/Onther-Tech/tokyo.git && cd tokyo
+
+# install node modules with yarn
+$ yarn install
+```
