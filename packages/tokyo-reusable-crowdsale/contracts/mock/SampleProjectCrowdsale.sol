@@ -44,7 +44,7 @@ contract SampleProjectCrowdsale is BaseCrowdsale, MiniMeBaseCrowdsale, BonusCrow
     return address(b & 0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff);
   }
 
-  function generateTokens(uint256 _targetTotalSupply) internal {
+  function generateHoldersTokens(uint256 _targetTotalSupply) internal {
   }
 
   function init(bytes32[] args) public {

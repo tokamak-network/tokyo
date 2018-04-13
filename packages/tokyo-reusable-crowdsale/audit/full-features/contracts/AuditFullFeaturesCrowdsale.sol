@@ -44,9 +44,9 @@ contract AuditFullFeaturesCrowdsale is BaseCrowdsale, MiniMeBaseCrowdsale, Bonus
     return address(b & 0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff);
   }
 
-  function generateTokens(uint256 _targetTotalSupply) internal {
+  function generateHoldersTokens(uint256 _targetTotalSupply) internal {
 
-      generateTokens(0x557678cf28594495ef4b08a6447726f931f8d787, _targetTotalSupply, 100);
+      generateTargetTokens(0x557678cf28594495ef4b08a6447726f931f8d787, _targetTotalSupply, 100);
   }
 
   function init(bytes32[] args) public {

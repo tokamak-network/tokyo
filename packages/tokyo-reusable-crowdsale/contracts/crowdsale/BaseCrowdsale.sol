@@ -182,8 +182,8 @@ contract BaseCrowdsale is Ownable {
   function finalizationSuccessHook() internal {
     uint targetTotalSupply = getTotalSupply().mul(coeff).div(crowdsaleRatio);
 
-    generateTokens(targetTotalSupply); // for token holders without time lock
-    generateTokens(address(locker), targetTotalSupply, lockerRatio); // tokens for locker
+    generateHoldersTokens(targetTotalSupply); // for token holders without time lock
+    generateTargetTokens(address(locker), targetTotalSupply, lockerRatio); // tokens for locker
 
     locker.activate();
     vault.close();
@@ -203,12 +203,12 @@ contract BaseCrowdsale is Ownable {
    * generateTokens called when finalization is success, and should be implemented
    * by Crowdsale Generator.
    */
-  function generateTokens(uint256 _targetTotalSupply) internal;
+  function generateHoldersTokens(uint256 _targetTotalSupply) internal;
 
   /**
    * @notice helper function to generate tokens with ratio
    */
-  function generateTokens(address _beneficiary, uint256 _targetTotalSupply, uint256 _ratio) {
+  function generateTargetTokens(address _beneficiary, uint256 _targetTotalSupply, uint256 _ratio) {
     uint256 tokens = _targetTotalSupply.mul(_ratio).div(coeff);
     generateTokens(_beneficiary, tokens);
   }

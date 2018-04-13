@@ -37,7 +37,7 @@ export default class Parser {
       migration: "",
       crowdsale: {
         init: "",
-        generateTokens: "",
+        generateHoldersTokens: "",
       },
     };
     const constructors = {}; // for constructors for Crowdsale, Locker
@@ -111,8 +111,8 @@ ${ writeTabs(tab2) });
         continue; // both are included in BaseCrowdsale constructor
       }
 
-      codes.crowdsale.generateTokens += `
-  ${ writeTabs(tab2) }generateTokens(${ token_holder }, _targetTotalSupply, ${ token_ratio });
+      codes.crowdsale.generateHoldersTokens += `
+  ${ writeTabs(tab2) }generateTargetTokens(${ token_holder }, _targetTotalSupply, ${ token_ratio });
 `;
     }
 
