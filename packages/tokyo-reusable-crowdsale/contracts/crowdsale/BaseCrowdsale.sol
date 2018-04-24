@@ -48,7 +48,7 @@ contract BaseCrowdsale is Ownable {
    */
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
   event Finalized();
-  event ClaimTokens(address indexed _token, address indexed _tokenOwner, uint256 _amount);
+  event ClaimTokens(address indexed _token, uint256 _amount);
 
   // fallback function can be used to buy tokens
   function () external payable {
@@ -225,9 +225,10 @@ contract BaseCrowdsale is Ownable {
   /**
    * @notice claim ERC20Basic compatible tokens
    */
-  function claimTokens(ERC20Basic _token, address _tokenOwner, uint256 _amount) external onlyOwner {
+  function claimTokens(ERC20Basic _token) external onlyOwner {
     require(isFinalized);
-    _token.transfer(_tokenOwner, _amount);
-    ClaimTokens(_token, _tokenOwner, _amount);
+    uint256 balance = _token.balanceOf(this);
+    _token.transfer(owner, balance);
+    ClaimTokens(_token, balance);
   }
 }
