@@ -225,4 +225,5 @@ contract BaseCrowdsale is Ownable {
     require(amount <= token.balanceOf(this));
     _token.transfer(_tokenOwner, _amount);
     ClaimTokens(_token, _tokenOwner, _amount);
+  }
 }
