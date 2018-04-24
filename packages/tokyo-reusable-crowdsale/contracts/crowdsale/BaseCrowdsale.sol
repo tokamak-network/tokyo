@@ -3,6 +3,7 @@ pragma solidity ^0.4.18;
 import "../zeppelin/math/SafeMath.sol";
 import "../vault/MultiHolderVault.sol";
 import "../locker/Locker.sol";
+import "../zeppelin/token/ERC20/ERC20Basic.sol";
 
 contract BaseCrowdsale is Ownable {
   using SafeMath for uint256;
@@ -47,6 +48,7 @@ contract BaseCrowdsale is Ownable {
    */
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
   event Finalized();
+  event ClaimTokens(address indexed _token, address indexed _tokenOwner, uint256 _amount);
 
   // fallback function can be used to buy tokens
   function () external payable {
@@ -219,4 +221,13 @@ contract BaseCrowdsale is Ownable {
     uint256 tokens = _targetTotalSupply.mul(_ratio).div(coeff);
     generateTokens(_beneficiary, tokens);
   }
+
+  /**
+   * @notice claim ERC20Basic compatible tokens
+   */
+  function claimTokens(ERC20Basic _token, address _tokenOwner, uint256 _amount) external onlyOwner {
+    require(isFinalized);
+    require(amount <= token.balanceOf(this));
+    _token.transfer(_tokenOwner, _amount);
+    ClaimTokens(_token, _tokenOwner, _amount);
 }
