@@ -153,7 +153,7 @@ contract StagedCrowdsale is KYCCrowdsale {
     return super.calculateToFund(_beneficiary, _weiAmount);
   }
 
-  function buyTokensPostHook(address _beneficiary, uint256 _toFund) internal {
+  function buyTokensPreHook(address _beneficiary, uint256 _toFund) internal {
     uint8 currentPeriod;
     bool onSale;
 
@@ -164,6 +164,6 @@ contract StagedCrowdsale is KYCCrowdsale {
     Period storage p = periods[currentPeriod];
 
     p.weiRaised = uint128(_toFund.add(uint256(p.weiRaised)));
-    super.buyTokensPostHook(_beneficiary, _toFund);
+    super.buyTokensPreHook(_beneficiary, _toFund);
   }
 }

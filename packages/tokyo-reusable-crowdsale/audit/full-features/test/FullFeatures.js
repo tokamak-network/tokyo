@@ -383,7 +383,7 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
       const investor = investor2;
       const investAmount = ether(20);
       // 2020 ether funded for the sale
-      const rate = getCurrentRate(input, investAmount); // 200 * 1.1
+      const rate = getCurrentRate(input, investAmount); // 200 * 1.15
 
       const tokenAmount = investAmount.mul(rate);
       const tokenBalance = await token.balanceOf(investor);

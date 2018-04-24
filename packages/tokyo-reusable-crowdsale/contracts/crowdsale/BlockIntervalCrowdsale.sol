@@ -26,8 +26,8 @@ contract BlockIntervalCrowdsale is BaseCrowdsale {
   /**
    * @notice save the block number
    */
-  function buyTokensPostHook(address _beneficiary, uint256 _toFund) internal {
+  function buyTokensPreHook(address _beneficiary, uint256 _toFund) internal {
     recentBlock[msg.sender] = block.number;
-    super.buyTokensPostHook(_beneficiary, _toFund);
+    super.buyTokensPreHook(_beneficiary, _toFund);
   }
 }

@@ -76,11 +76,11 @@ contract BaseCrowdsale is Ownable {
       msg.sender.transfer(toReturn);
     }
 
+    buyTokensPostHook(beneficiary, tokens, toFund);
+
     generateTokens(beneficiary, tokens);
     TokenPurchase(msg.sender, beneficiary, toFund, tokens);
     forwardFunds(toFund);
-
-    buyTokensPostHook(beneficiary, toFund);
   }
 
   /**
@@ -169,13 +169,18 @@ contract BaseCrowdsale is Ownable {
 
   /**
    * @notice pre hook for buyTokens function
+   * @param _beneficiary address address to receive tokens
+   * @param _toFund uint256 amount of ether in wei
    */
   function buyTokensPreHook(address _beneficiary, uint256 _toFund) internal {}
 
   /**
    * @notice post hook for buyTokens function
+   * @param _beneficiary address address to receive tokens
+   * @param _tokens uint256 amount of tokens to receive
+   * @param _toFund uint256 amount of ether in wei
    */
-  function buyTokensPostHook(address _beneficiary, uint256 _toFund) internal {}
+  function buyTokensPostHook(address _beneficiary, uint256 _tokens, uint256 _toFund) internal {}
 
   function finalizationFailHook() internal {
     vault.enableRefunds();

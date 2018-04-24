@@ -24,8 +24,8 @@ contract PurchaseLimitedCrowdsale is BaseCrowdsale {
     return toFund;
   }
 
-  function buyTokensPostHook(address _beneficiary, uint256 _toFund) internal {
+  function buyTokensPreHook(address _beneficiary, uint256 _toFund) internal {
     purchaseFunded[_beneficiary] = purchaseFunded[_beneficiary].add(_toFund);
-    super.buyTokensPostHook(_beneficiary, _toFund);
+    super.buyTokensPreHook(_beneficiary, _toFund);
   }
 }
