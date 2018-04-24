@@ -14,8 +14,9 @@ solidity-template: Fix crowdsale.generateToken generator
 
 Wrong generatorToken process in Parser and crowdsale template
 ```
-   
-   
+
+<br>
+
 2. If a single commit fix more than 1 package, you can use any meaningful prefix. Or you can *omit* it for simplicity.
 
 Example: tokyo-solidity-template, tokyo-reusable-crowdsale, tokyo-input
