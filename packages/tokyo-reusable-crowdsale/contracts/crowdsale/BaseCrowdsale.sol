@@ -227,7 +227,6 @@ contract BaseCrowdsale is Ownable {
    */
   function claimTokens(ERC20Basic _token, address _tokenOwner, uint256 _amount) external onlyOwner {
     require(isFinalized);
-    require(amount <= token.balanceOf(this));
     _token.transfer(_tokenOwner, _amount);
     ClaimTokens(_token, _tokenOwner, _amount);
   }
