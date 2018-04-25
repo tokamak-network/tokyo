@@ -43,6 +43,6 @@
         "func-names": ["error", "never"],
         "no-underscore-dangle": "off",
         "no-console": "off",
-        newline-per-chained-call: ["error", { "ignoreChainWithDepth": 8 }]
+        "newline-per-chained-call": ["error", { "ignoreChainWithDepth": 8 }]
     }
 }

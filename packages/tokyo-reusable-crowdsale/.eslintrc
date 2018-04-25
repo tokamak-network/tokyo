@@ -35,7 +35,7 @@
 
         "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/*.test.js", "**/*.spec.js", "**/compile.js", "**/test/*.js"]}],
 
-        // fuzex
+        // custom
         "no-await-in-loop": "off",
         "no-restricted-syntax": "off",
         "no-mixed-operators": "off",
