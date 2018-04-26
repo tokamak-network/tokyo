@@ -26,10 +26,11 @@ const Vault = artifacts.require("./MultiHolderVault.sol");
 const Locker = artifacts.require("./Locker.sol");
 const Token = artifacts.require("./AuditFullFeaturesToken.sol");
 const Crowdsale = artifacts.require("./AuditFullFeaturesCrowdsale.sol");
+const MintableToken = artifacts.require("./MintableToken.sol");
 
 contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investor2, investor3, ...accounts ]) => {
   // contract instances
-  let kyc, vault, locker, token, crowdsale;
+  let kyc, vault, locker, token, crowdsale, otherToken;
 
   // TX parameteres
   const gas = 2000000;
@@ -50,6 +51,10 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
   const maxCap = new BigNumber(input.sale.max_cap);
   const minCap = new BigNumber(input.sale.min_cap);
 
+  // erc20 token amount
+  const otherTokenAmount = new BigNumber(200);
+  const otherTokenSentAmount = new BigNumber(100);
+
   console.log(JSON.stringify(input, null, 2));
 
   before(async () => {
@@ -59,6 +64,7 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
     locker = await Locker.deployed();
     token = await Token.deployed();
     crowdsale = await Crowdsale.deployed();
+    otherToken = await MintableToken.new();
 
     console.log(`
       kyc: ${ kyc.address }
@@ -66,6 +72,7 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
       locker: ${ locker.address }
       token: ${ token.address }
       crowdsale: ${ crowdsale.address }
+      otherToken: ${ otherToken.address }
     `);
   });
 
@@ -179,7 +186,6 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
       const purchasedAmount = stageMaxPurchaseLimit; // 400 ether
       // const rate = baseRate.mul(1.3); // 200 * 1.3
       const rate = getCurrentRate(input, purchasedAmount);
-
 
       const tokenAmount = purchasedAmount.mul(rate);
       const tokenBalance = await token.balanceOf(investor);
@@ -431,6 +437,38 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
     });
   });
 
+  describe("mistakenly send ERC20 tokens", async () => {
+    before(async () => {
+      await otherToken.mint(investor3, otherTokenAmount)
+        .should.be.fulfilled;
+    });
+
+    it("should erc20 sent to crowdsale address", async () => {
+      const investor = investor3;
+
+      const tokenAmountBeforeTransfer = await otherToken.balanceOf(investor);
+      await otherToken.transfer(crowdsale.address, otherTokenSentAmount, { from: investor })
+        .should.be.fulfilled;
+      const tokenAmountAfterTransfer = await otherToken.balanceOf(investor);
+
+      tokenAmountAfterTransfer.should.be.bignumber
+        .equal(tokenAmountBeforeTransfer.sub(otherTokenSentAmount));
+
+      const crowdsaleTokenAmount = await otherToken.balanceOf(crowdsale.address);
+      const crowdsaleOwnerTokenAmount = await otherToken.balanceOf(owner);
+
+      crowdsaleTokenAmount.should.be.bignumber
+        .equal(otherTokenSentAmount);
+      crowdsaleOwnerTokenAmount.should.be.bignumber
+        .equal(0);
+    });
+
+    it("should not claimed before crowdsale finish", async () => {
+      await crowdsale.claimTokens(otherToken.address)
+        .should.be.rejectedWith(EVMThrow);
+    });
+  });
+
   describe("After stage 1 finished", async () => {
     const targetTime = input.sale.stages[ 1 ].end_time + 10;
 
@@ -467,6 +505,22 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
         }
       }
       /* eslint-enable camelcase */
+    });
+  });
+
+  describe("claim ERC20 Tokens", async () => {
+    it("should claimed", async () => {
+      const crowdsaleOtherTokenBalanceBeforeClaim = await otherToken.balanceOf(crowdsale.address);
+      await crowdsale.claimTokens(otherToken.address)
+        .should.be.fulfilled;
+      const crowdsaleOtherTokenBalanceAfterClaim = await otherToken.balanceOf(crowdsale.address);
+
+      crowdsaleOtherTokenBalanceAfterClaim.should.be.bignumber
+        .equal(crowdsaleOtherTokenBalanceBeforeClaim.sub(otherTokenSentAmount));
+
+      const crowdsaleOwnerOtherTokenAmount = await otherToken.balanceOf(owner);
+      crowdsaleOwnerOtherTokenAmount.should.be.bignumber
+        .equal(otherTokenSentAmount);
     });
   });
 });
