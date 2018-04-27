@@ -3,7 +3,7 @@ Truffle project generator for ICO contracts
 
 
 ## Packages
-#### [tokyo-cli](https://github.com/Onther-Tech/tokyo/tree/master/packages/tokyo-cli)
+#### [tokyo-cli](./packages/tokyo-cli)
 Cli for Tokyo
 
 #### [tokyo-reusable-crowdsale](./packages/tokyo-reusable-crowdsale)
@@ -25,7 +25,7 @@ Sample Input Data for tokyo
 
 #### Environment
 node 8.9.1
-yanr 1.5.1
+yarn 1.5.1
 
 ```bash
 # clone repository
