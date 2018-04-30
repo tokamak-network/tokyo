@@ -163,14 +163,14 @@ Uint : __string__ parsed with `bignumber.js` for unsigned integer.
 
 ```javascript
 // ES6
-import schema from 'tokyo-schema';
+import validate from 'tokyo-schema';
 
 // ES5
-const schema = require('tokyo-schema').default;
+const validate = require('tokyo-schema').default;
 
 const inputObj = {...} // Input with the above schema form
 
-const result = schema.validate(inputObj);
+const result = validate(inputObj);
 
 if (result.error) {
   console.error(result.error);

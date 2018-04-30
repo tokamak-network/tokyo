@@ -1,14 +1,18 @@
 import schema from "./lib/schema";
 import { testValue } from "./lib/utils";
 
-export default schema;
+export default function validate(data) {
+  const result = schema.validate(data);
 
-export function validate(data) {
-  const { error, value } = schema.validate(data);
-  if (error) throw error;
+  if (result.error) {
+    return result;
+  }
 
-  const testError = testValue(value);
-  if (testError) throw testError;
+  const testError = testValue(result.value);
 
-  return value;
+  if (testError) {
+    result.error = testError;
+  }
+
+  return result;
 }
