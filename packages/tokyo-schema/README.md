@@ -1,7 +1,7 @@
 [![Build Status][image]][travis-url]
 
 ## Tokyo Schema
-> See examples at [here](https://github.com/Onther-Tech/tokyo-schema/tree/master/submodules)
+> Validate input using [Joi](https://github.com/hapijs/joi)
 
 ### Types
 Time : Human readable string without time zone considered (UTC). Only support `YYYY/MM/DD HH:mm:ss` format.
@@ -158,6 +158,33 @@ Uint : __string__ parsed with `bignumber.js` for unsigned integer.
   }
 }
 ```
+
+### Example
+
+```javascript
+// ES6
+import schema from 'tokyo-schema';
+
+// ES5
+const schema = require('tokyo-schema').default;
+
+const inputObj = {...} // Input with the above schema form
+
+const result = schema.validate(inputObj);
+
+if (result.error) {
+  console.error(result.error);
+
+  // inputObj is invalid schema
+} else {
+  const obj = resuilt.value;
+
+  // use `obj`...
+}
+
+```
+
+
 
 
 [image]: https://secure.travis-ci.org/Onther-Tech/tokyo-schema.png?branch=master
