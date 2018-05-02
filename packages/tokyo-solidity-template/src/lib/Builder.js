@@ -1,4 +1,4 @@
-import schema from "tokyo-schema";
+import validate from "tokyo-schema";
 import memFs from "mem-fs";
 import editor from "mem-fs-editor";
 
@@ -11,7 +11,7 @@ import Parser from "./Parser";
  */
 export default class Builder {
   constructor(inputObj) {
-    const { value, error } = schema.validate(inputObj);
+    const { value, error } = validate(inputObj);
     if (error) throw error;
 
     this.rawInput = inputObj;

@@ -1,7 +1,7 @@
 const moment = require("moment");
 const get = require("lodash/get");
 const ethUtils = require("ethereumjs-util");
-const schema = require("tokyo-schema").default;
+const validate = require("tokyo-schema").default;
 
 const BigNumber = web3.BigNumber;
 const { toBuffer, setLengthLeft, addHexPrefix, isValidAddress } = ethUtils;
@@ -19,7 +19,7 @@ const Crowdsale = artifacts.require("./AuditFullFeaturesCrowdsale.sol");
 module.exports = async function (deployer, network, accounts) {
   console.log(accounts)
   const address = {};
-  const { value, error } = schema.validate(getInput());
+  const { value, error } = validate(getInput());
   const input = value;
 
   const data = { address, input };
