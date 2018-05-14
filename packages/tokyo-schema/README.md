@@ -11,19 +11,22 @@ Account : 20 Bytes Ethereum account starting with "0x"
 - eg) 0x5a0b54d5dc17e0aadc383d2db43b0a0d3e029c4c
 
 Uint : __string__ parsed with `bignumber.js` for unsigned integer.
-- eg) "400000000000000000000"
+- eg) "400000000000000000000", "1e18"
 
 ### Schema
 
 ```
 {
+  project_name: String,
+
+  // token defines which function should be given
   token : {
     token_type : {
       is_minime : Boolean,
       token_option : {
-        burnable : Boolean,
-        pausable : Boolean,
-        no_mint_after_sale: Boolean, // TODO: not implemented yet
+        burnable : Boolean,          // self-burnable
+        pausable : Boolean,          // pause token transfer
+        no_mint_after_sale: Boolean, // no more token generation after sale
       }
     },
     token_name : String,

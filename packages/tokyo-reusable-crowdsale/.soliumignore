@@ -1,1 +1,4 @@
 node_modules
+./contracts/zeppelin
+./contracts/minime
+./contracts/wallet

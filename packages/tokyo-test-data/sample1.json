@@ -6,7 +6,8 @@
     },
     "token_option": {
       "burnable": true,
-      "pausable": true
+      "pausable": true,
+      "no_mint_after_sale": true
     },
     "token_name": "Sample String",
     "token_symbol": "SS",

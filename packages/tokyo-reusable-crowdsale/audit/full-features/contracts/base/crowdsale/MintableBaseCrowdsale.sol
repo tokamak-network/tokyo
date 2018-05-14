@@ -7,7 +7,7 @@ contract MintableBaseCrowdsale is BaseCrowdsale {
 
   MintableToken token;
 
-  function MintableBaseCrowdsale (address _token) {
+  function MintableBaseCrowdsale (address _token) public {
     require(_token != address(0));
     token = MintableToken(_token);
   }
@@ -25,4 +25,8 @@ contract MintableBaseCrowdsale is BaseCrowdsale {
     return token.totalSupply();
   }
 
+  function finishMinting() internal returns (bool) {
+    require(token.finishMinting());
+    return true;
+  }
 }

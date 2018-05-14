@@ -1,8 +1,8 @@
 pragma solidity ^0.4.18;
 
-import '../zeppelin/math/SafeMath.sol';
-import '../zeppelin/ownership/Ownable.sol';
-import '../zeppelin/token/ERC20/ERC20.sol';
+import "../zeppelin/math/SafeMath.sol";
+import "../zeppelin/ownership/Ownable.sol";
+import "../zeppelin/token/ERC20/ERC20.sol";
 
 /**
  * @title HolderBase

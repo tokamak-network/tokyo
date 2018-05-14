@@ -4,7 +4,7 @@ import {
   convertAddress,
 } from "./templateHelper";
 
-// common constructor parameters for ZeppelinBaseCrowdsale & MiniMeBaseCrowdsale
+// common constructor parameters for MintableBaseCrowdsale & MiniMeBaseCrowdsale
 // [ [solidity data type], [path for lodash.get] ]
 const arrayConvertor = array => (key, convertor) =>
   array.map(s => (convertor ? convertor(s[ key ]) : s[ key ]));
@@ -31,8 +31,13 @@ export default class Parser {
     });
 
     const meta = {};
+
     const token = f(); // for token contract
+    const postToken = f(); // appended to toekn
+
     const crowdsale = f(); // for crowdsale contract
+    const postCrowdsale = f(); // appended to crowdsale
+
     const codes = { // solidity or JS source code
       migration: "",
       crowdsale: {
@@ -126,6 +131,18 @@ ${ writeTabs(tab2) });
         token.importStatements.push("import \"./base/token/BurnableMiniMeToken.sol\";");
       }
 
+      if (input.token.token_option.pausable) {
+        // do nothing. MiniMe is pausable as default
+      }
+
+      if (input.token.token_option.no_mint_after_sale) {
+        token.parentsList.push("NoMintMiniMeToken");
+        token.importStatements.push("import \"./base/token/NoMintMiniMeToken.sol\";");
+
+        postCrowdsale.parentsList.push("FinishMintingCrowdsale");
+        postCrowdsale.importStatements.push("import \"./base/crowdsale/FinishMintingCrowdsale.sol\";");
+      }
+
       crowdsale.parentsList.push("MiniMeBaseCrowdsale");
       crowdsale.importStatements.push("import \"./base/crowdsale/MiniMeBaseCrowdsale.sol\";");
 
@@ -134,10 +151,10 @@ ${ writeTabs(tab2) });
       token.parentsList.push("Mintable");
       token.importStatements.push("import \"./base/zeppelin/token/Mintable.sol\";");
 
-      crowdsale.parentsList.push("ZeppelinBaseCrowdsale");
-      crowdsale.importStatements.push("import \"./base/crowdsale/ZeppelinBaseCrowdsale.sol\";");
+      crowdsale.parentsList.push("MintableBaseCrowdsale");
+      crowdsale.importStatements.push("import \"./base/crowdsale/MintableBaseCrowdsale.sol\";");
 
-      constructors.ZeppelinBaseCrowdsale = [["address", "address.token"]];
+      constructors.MintableBaseCrowdsale = [["address", "address.token"]];
 
       if (input.token.token_option.burnable) {
         token.parentsList.push("BurnableToken");
@@ -147,6 +164,11 @@ ${ writeTabs(tab2) });
       if (input.token.token_option.pausable) {
         token.parentsList.push("Pausable");
         token.importStatements.push("import \"./base/zeppelin/lifecycle/Pausable.sol\";");
+      }
+
+      if (input.token.token_option.no_mint_after_sale) {
+        postCrowdsale.parentsList.push("FinishMintingCrowdsale");
+        postCrowdsale.importStatements.push("import \"./base/crowdsale/FinishMintingCrowdsale.sol\";");
       }
     }
 
@@ -320,8 +342,14 @@ ${ writeTabs(tab2) }nextTokenOwner = _nextTokenOwner;
 
     return {
       meta,
-      token,
-      crowdsale,
+      token: {
+        parentsList: [...token.parentsList, ...postToken.parentsList],
+        importStatements: [...token.importStatements, ...postToken.importStatements],
+      },
+      crowdsale: {
+        parentsList: [...token.parentsList, ...postCrowdsale.parentsList],
+        importStatements: [...token.importStatements, ...postCrowdsale.importStatements],
+      },
       codes,
       constructors,
       initMigVars,

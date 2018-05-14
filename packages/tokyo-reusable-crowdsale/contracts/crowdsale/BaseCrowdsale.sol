@@ -81,7 +81,7 @@ contract BaseCrowdsale is Ownable {
     buyTokensPostHook(beneficiary, tokens, toFund);
 
     generateTokens(beneficiary, tokens);
-    TokenPurchase(msg.sender, beneficiary, toFund, tokens);
+    emit TokenPurchase(msg.sender, beneficiary, toFund, tokens);
     forwardFunds(toFund);
   }
 
@@ -94,7 +94,7 @@ contract BaseCrowdsale is Ownable {
     require(hasEnded());
 
     finalization();
-    Finalized();
+    emit Finalized();
 
     isFinalized = true;
   }
@@ -124,7 +124,7 @@ contract BaseCrowdsale is Ownable {
   /// @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
     bool capReached = weiRaised >= cap;
-    return capReached || now > endTime;
+    return capReached || now > endTime; // solium-disable-line security/no-block-members
   }
 
   // Override this method to have a way to add business logic to your crowdsale when buying
@@ -141,7 +141,7 @@ contract BaseCrowdsale is Ownable {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now >= startTime && now <= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime; // solium-disable-line security/no-block-members
     bool nonZeroPurchase = msg.value != 0;
     return withinPeriod && nonZeroPurchase;
   }
@@ -167,7 +167,7 @@ contract BaseCrowdsale is Ownable {
    * @notice interface to initialize crowdsale parameters.
    * init should be implemented by Crowdsale Generator.
    */
-   function init(bytes32[] args) public;
+  function init(bytes32[] args) public;
 
   /**
    * @notice pre hook for buyTokens function
@@ -201,11 +201,12 @@ contract BaseCrowdsale is Ownable {
   }
 
   /**
-   * @notice interfaces to generate token for both MiniMe & Zeppelin(Mintable) token.
+   * @notice common interfaces for both of MiniMe and Mintable token.
    */
   function generateTokens(address _beneficiary, uint256 _tokens) internal;
   function transferTokenOwnership(address _to) internal;
   function getTotalSupply() internal returns (uint256);
+  function finishMinting() internal returns (bool);
 
   /**
    * @notice interface to generate tokens for token holders without time lock.
@@ -217,7 +218,7 @@ contract BaseCrowdsale is Ownable {
   /**
    * @notice helper function to generate tokens with ratio
    */
-  function generateTargetTokens(address _beneficiary, uint256 _targetTotalSupply, uint256 _ratio) {
+  function generateTargetTokens(address _beneficiary, uint256 _targetTotalSupply, uint256 _ratio) internal {
     uint256 tokens = _targetTotalSupply.mul(_ratio).div(coeff);
     generateTokens(_beneficiary, tokens);
   }
@@ -229,6 +230,6 @@ contract BaseCrowdsale is Ownable {
     require(isFinalized);
     uint256 balance = _token.balanceOf(this);
     _token.transfer(owner, balance);
-    ClaimTokens(_token, balance);
+    emit ClaimTokens(_token, balance);
   }
 }

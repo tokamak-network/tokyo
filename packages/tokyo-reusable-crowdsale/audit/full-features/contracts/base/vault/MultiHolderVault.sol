@@ -1,8 +1,8 @@
 pragma solidity ^0.4.18;
 
-import '../zeppelin/math/SafeMath.sol';
-import '../zeppelin/crowdsale/RefundVault.sol';
-import '../common/HolderBase.sol';
+import "../zeppelin/math/SafeMath.sol";
+import "../zeppelin/crowdsale/RefundVault.sol";
+import "../common/HolderBase.sol";
 
 /**
  * @title MultiHolderVault
@@ -14,7 +14,8 @@ contract MultiHolderVault is HolderBase, RefundVault {
   function MultiHolderVault(address _wallet, uint256 _ratioCoeff)
     public
     HolderBase(_ratioCoeff)
-    RefundVault(_wallet) {}
+    RefundVault(_wallet)
+  {}
 
   function close() public onlyOwner {
     require(state == State.Active);

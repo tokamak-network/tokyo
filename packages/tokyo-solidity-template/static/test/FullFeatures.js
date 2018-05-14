@@ -255,7 +255,8 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
   });
 
   describe("After stage 0 finished (stage 1 not started yet)", async () => {
-    const targetTime = (input.sale.stages[ 0 ].end_time + input.sale.stages[ 1 ].start_time) / 2;
+    let targetTime = (input.sale.stages[ 0 ].end_time + input.sale.stages[ 1 ].start_time) / 2;
+    targetTime += 10;
 
     it(`increase time to ${ targetTime }`, async () => {
       await increaseTimeTo(targetTime)
@@ -279,9 +280,11 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
 
   describe("After stage 1 started (with time bonus 1)", async () => {
     const stageIndex = 1;
-    const targetTime = input.sale.stages[ stageIndex ].start_time;
+    let targetTime = input.sale.stages[ stageIndex ].start_time;
     const stageMaxPurchaseLimit = input.sale.stages[ stageIndex ].max_purchase_limit;
     const stageMinPurchaseLimit = input.sale.stages[ stageIndex ].min_purchase_limit;
+
+    targetTime += 10;
 
     it(`increase time to ${ targetTime }`, async () => {
       await increaseTimeTo(targetTime)
@@ -362,7 +365,8 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
   });
 
   describe("After time bonus 1 finished (stage 1 not finished)", async () => {
-    const targetTime = input.sale.rate.bonus.time_bonuses[ 1 ].bonus_time_stage;
+    let targetTime = input.sale.rate.bonus.time_bonuses[ 1 ].bonus_time_stage;
+    targetTime += 10;
 
     it(`increase time to ${ targetTime }`, async () => {
       await increaseTimeTo(targetTime)
@@ -470,7 +474,8 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
   });
 
   describe("After stage 1 finished", async () => {
-    const targetTime = input.sale.stages[ 1 ].end_time + 10;
+    let targetTime = input.sale.stages[ 1 ].end_time + 10;
+    targetTime += 10;
 
     it(`increase time to ${ targetTime }`, async () => {
       await increaseTimeTo(targetTime)
@@ -488,6 +493,9 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
 
       await crowdsale.finalize()
         .should.be.fulfilled;
+
+      await token.generateTokens(owner, ether(1))
+        .should.be.rejectedWith(EVMThrow);
 
       const totalSupply = await token.totalSupply();
 

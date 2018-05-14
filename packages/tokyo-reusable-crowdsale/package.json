@@ -4,7 +4,10 @@
   "description": "reusable crowdsale contract",
   "main": "truffle-config.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "npm run lint:eslint && npm run lint:solium",
+    "lint:eslint": "eslint --fix {src,test}/**/*.js",
+    "lint:solium": "solium --fix -d ./contracts"
   },
   "repository": {
     "type": "git",
@@ -21,12 +24,14 @@
   "homepage": "https://github.com/Onther-Tech/tokyo-reusable-crowdsale#readme",
   "devDependencies": {
     "chai-bignumber": "^2.0.2",
+    "eslint": "^4.19.1",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-import": "^2.10.0",
     "ethereumjs-util": "^5.1.5",
     "lodash": "^4.17.5",
     "post-commit": "^0.0.1",
     "rimraf": "^2.6.2",
+    "solium": "^1.1.7",
     "tokyo-schema": "^1.1.1"
   },
   "dependencies": {

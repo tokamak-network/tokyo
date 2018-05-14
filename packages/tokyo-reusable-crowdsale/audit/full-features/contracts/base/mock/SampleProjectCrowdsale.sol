@@ -29,7 +29,7 @@ contract SampleProjectCrowdsale is BaseCrowdsale, MiniMeBaseCrowdsale, BonusCrow
     KYCCrowdsale(
       parseAddress(args[4]))
     StagedCrowdsale(
-      parseUint(args[5])) public {}
+      parseUint(args[5])) public {} // solium-disable-line indentation
 
 
   function parseBool(bytes32 b) internal pure returns (bool) {
@@ -60,7 +60,7 @@ contract SampleProjectCrowdsale is BaseCrowdsale, MiniMeBaseCrowdsale, BonusCrow
     address _locker = address(args[9]);
     address _nextTokenOwner = address(args[10]);
 
-    require(_startTime >= now);
+    require(_startTime >= now); // solium-disable-line security/no-block-members
     require(_endTime >= _startTime);
     require(_rate > 0);
     require(_coeff > 0);

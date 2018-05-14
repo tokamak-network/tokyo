@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-import '../zeppelin/ownership/Ownable.sol';
+import "../zeppelin/ownership/Ownable.sol";
 
 /**
  * @title KYC
@@ -42,7 +42,7 @@ contract KYC is Ownable {
     require(_addr != address(0));
     admin[_addr] = _isAdmin;
 
-    SetAdmin(_addr, _isAdmin);
+    emit SetAdmin(_addr, _isAdmin);
   }
 
   /**
@@ -57,7 +57,7 @@ contract KYC is Ownable {
 
     registeredAddress[_addr] = true;
 
-    Registered(_addr);
+    emit Registered(_addr);
   }
 
   /**
@@ -73,7 +73,7 @@ contract KYC is Ownable {
 
       registeredAddress[_addrs[i]] = true;
 
-      Registered(_addrs[i]);
+      emit Registered(_addrs[i]);
     }
   }
 
@@ -87,7 +87,7 @@ contract KYC is Ownable {
   {
     registeredAddress[_addr] = false;
 
-    Unregistered(_addr);
+    emit Unregistered(_addr);
   }
 
   /**
@@ -101,7 +101,7 @@ contract KYC is Ownable {
     for(uint256 i = 0; i < _addrs.length; i++) {
       registeredAddress[_addrs[i]] = false;
 
-      Unregistered(_addrs[i]);
+      emit Unregistered(_addrs[i]);
     }
   }
 }

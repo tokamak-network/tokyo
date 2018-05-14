@@ -18,7 +18,7 @@ contract StagedCrowdsale is KYCCrowdsale {
     uint128 cap;
     uint128 maxPurchaseLimit;
     uint128 minPurchaseLimit;
-    uint128 weiRaised; // stage's wei raised
+    uint128 weiRaised; // stage's weiAmount raised
     uint32 startTime;
     uint32 endTime;
     bool kyc;
@@ -41,12 +41,14 @@ contract StagedCrowdsale is KYCCrowdsale {
     uint len = numPeriods;
 
     require(periods.length == 0);
-    require(len == _startTimes.length
-      && len == _endTimes.length
-      && len == _capRatios.length
-      && len == _maxPurchaseLimits.length
-      && len == _minPurchaseLimits.length
-      && len == _kycs.length);
+    // solium-disable
+    require(len == _startTimes.length &&
+      len == _endTimes.length &&
+      len == _capRatios.length &&
+      len == _maxPurchaseLimits.length &&
+      len == _minPurchaseLimits.length &&
+      len == _kycs.length);
+    // solium-enable
 
     for (uint i = 0; i < len; i++) {
       require(_endTimes[i] >= _startTimes[i]);
@@ -71,21 +73,6 @@ contract StagedCrowdsale is KYCCrowdsale {
     }
 
     require(validPeriods());
-  }
-
-  function validPeriods() internal view returns (bool) {
-    if (periods.length != numPeriods) {
-      return false;
-    }
-
-    // check periods are overlapped.
-    for (uint8 i = 0; i < periods.length - 1; i++) {
-      if (periods[i].endTime >= periods[i + 1].startTime) {
-        return false;
-      }
-    }
-
-    return true;
   }
 
   /**
@@ -113,11 +100,28 @@ contract StagedCrowdsale is KYCCrowdsale {
     return periods[periods.length - 1].endTime < now;
   }
 
+
+  function validPeriods() internal view returns (bool) {
+    if (periods.length != numPeriods) {
+      return false;
+    }
+
+    // check periods are overlapped.
+    for (uint8 i = 0; i < periods.length - 1; i++) {
+      if (periods[i].endTime >= periods[i + 1].startTime) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   /**
    * @notice Override BaseCrowdsale.calculateToFund function.
    * Check if period is on sale and apply cap if needed.
    */
   function calculateToFund(address _beneficiary, uint256 _weiAmount) internal view returns (uint256) {
+    uint256 weiAmount = _weiAmount;
     uint8 currentPeriod;
     bool onSale;
 
@@ -133,24 +137,24 @@ contract StagedCrowdsale is KYCCrowdsale {
     }
 
     // check min purchase limit of the period
-    require(_weiAmount >= uint(p.minPurchaseLimit));
+    require(weiAmount >= uint(p.minPurchaseLimit));
 
     // reduce up to max purchase limit of the period
-    if (p.maxPurchaseLimit != 0 && _weiAmount > uint(p.maxPurchaseLimit)) {
-      _weiAmount = uint(p.maxPurchaseLimit);
+    if (p.maxPurchaseLimit != 0 && weiAmount > uint(p.maxPurchaseLimit)) {
+      weiAmount = uint(p.maxPurchaseLimit);
     }
 
     // pre-calculate `toFund` with the period's cap
     if (p.cap > 0) {
-      uint256 postWeiRaised = uint256(p.weiRaised).add(_weiAmount);
+      uint256 postWeiRaised = uint256(p.weiRaised).add(weiAmount);
 
       if (postWeiRaised > p.cap) {
-        _weiAmount = uint256(p.cap).sub(weiRaised);
+        weiAmount = uint256(p.cap).sub(weiRaised);
       }
     }
 
     // get `toFund` with the cap of the sale
-    return super.calculateToFund(_beneficiary, _weiAmount);
+    return super.calculateToFund(_beneficiary, weiAmount);
   }
 
   function buyTokensPreHook(address _beneficiary, uint256 _toFund) internal {

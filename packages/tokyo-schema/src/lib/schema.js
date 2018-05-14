@@ -10,6 +10,7 @@ module.exports = Joi.object().keys({
     token_option: Joi.object().keys({
       burnable: Joi.bool().required(),
       pausable: Joi.bool().required(),
+      no_mint_after_sale: Joi.bool().required(),
     }),
     token_name: Joi.string().required(),
     token_symbol: Joi.string().required(),

@@ -3,11 +3,11 @@ pragma solidity ^0.4.18;
 import "./BaseCrowdsale.sol";
 import "../zeppelin/token/MintableToken.sol";
 
-contract ZeppelinBaseCrowdsale is BaseCrowdsale {
+contract MintableBaseCrowdsale is BaseCrowdsale {
 
   MintableToken token;
 
-  function ZeppelinBaseCrowdsale (address _token) {
+  function MintableBaseCrowdsale (address _token) public {
     require(_token != address(0));
     token = MintableToken(_token);
   }
@@ -25,4 +25,8 @@ contract ZeppelinBaseCrowdsale is BaseCrowdsale {
     return token.totalSupply();
   }
 
+  function finishMinting() internal returns (bool) {
+    require(token.finishMinting());
+    return true;
+  }
 }
