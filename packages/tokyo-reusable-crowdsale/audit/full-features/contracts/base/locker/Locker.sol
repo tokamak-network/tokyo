@@ -144,7 +144,7 @@ contract Locker is Ownable {
     initialBalance = token.balanceOf(this);
     require(initialBalance > 0);
 
-    activeTime = now;
+    activeTime = now; // solium-disable-line security/no-block-members
 
     // set locker as active state
     state = State.Active;
@@ -239,9 +239,9 @@ contract Locker is Ownable {
     beneficiaries[msg.sender].withdrawAmount = beneficiaries[msg.sender].withdrawAmount.add(releasableAmount);
 
     beneficiaries[msg.sender].releaseAllTokens = beneficiaries[msg.sender].withdrawAmount == getPartialAmount(
-        beneficiaries[msg.sender].ratio,
-        coeff,
-        initialBalance);
+      beneficiaries[msg.sender].ratio,
+      coeff,
+      initialBalance);
 
     withdrawAmount = withdrawAmount.add(releasableAmount);
 
@@ -273,7 +273,9 @@ contract Locker is Ownable {
     uint firstTime = _r.releaseTimes[0];
     uint lastTime = _r.releaseTimes[1];
 
+    // solium-disable security/no-block-members
     require(now >= firstTime); // pass if can release
+    // solium-enable security/no-block-members
 
     if(now >= lastTime) { // inclusive to reduce calculation
       releasableAmount = totalReleasableAmount;

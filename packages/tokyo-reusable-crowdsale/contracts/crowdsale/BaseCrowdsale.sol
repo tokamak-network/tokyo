@@ -194,11 +194,15 @@ contract BaseCrowdsale is Ownable {
     generateHoldersTokens(targetTotalSupply); // for token holders without time lock
     generateTargetTokens(address(locker), targetTotalSupply, lockerRatio); // tokens for locker
 
+    afterGeneratorHook();
+
     locker.activate();
     vault.close();
 
     transferTokenOwnership(nextTokenOwner);
   }
+
+  function afterGeneratorHook() internal {}
 
   /**
    * @notice common interfaces for both of MiniMe and Mintable token.

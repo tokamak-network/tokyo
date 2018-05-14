@@ -141,6 +141,8 @@ ${ writeTabs(tab2) });
 
         postCrowdsale.parentsList.push("FinishMintingCrowdsale");
         postCrowdsale.importStatements.push("import \"./base/crowdsale/FinishMintingCrowdsale.sol\";");
+
+        constructors.FinishMintingCrowdsale = [];
       }
 
       crowdsale.parentsList.push("MiniMeBaseCrowdsale");
@@ -169,6 +171,8 @@ ${ writeTabs(tab2) });
       if (input.token.token_option.no_mint_after_sale) {
         postCrowdsale.parentsList.push("FinishMintingCrowdsale");
         postCrowdsale.importStatements.push("import \"./base/crowdsale/FinishMintingCrowdsale.sol\";");
+
+        constructors.FinishMintingCrowdsale = [];
       }
     }
 
@@ -247,7 +251,7 @@ ${ writeTabs(tab2) });
 
       constructors.StagedCrowdsale = [["uint", "input.sale.stages_length", input.sale.stages.length]]; // *_length => *.length
 
-      // StagedCrowdsale.initPeriods
+      // StagedCrowdsale.initStages
       const periodConvertor = arrayConvertor(input.sale.stages);
 
       codes.migration += `
@@ -260,7 +264,7 @@ ${ writeTabs(tab2) }const periodKycs = [ ${ periodConvertor("kyc").join(", ") } 
 `;
 
       codes.migration += `
-${ writeTabs(tab2) }await crowdsale.initPeriods(
+${ writeTabs(tab2) }await crowdsale.initStages(
 ${ writeTabs(tab3) }periodStartTimes,
 ${ writeTabs(tab3) }periodEndTimes,
 ${ writeTabs(tab3) }periodCapRatios,
@@ -332,6 +336,13 @@ ${ writeTabs(tab2) }locker = Locker(_locker);
 ${ writeTabs(tab2) }nextTokenOwner = _nextTokenOwner;
 `;
 
+    // append post contract declaration
+    token.parentsList = [...token.parentsList, ...postToken.parentsList];
+    token.importStatements = [...token.importStatements, ...postToken.importStatements];
+
+    crowdsale.parentsList = [...crowdsale.parentsList, ...postCrowdsale.parentsList];
+    crowdsale.importStatements = [...crowdsale.importStatements, ...postCrowdsale.importStatements];
+
     // constructor for The Crowdsale
     constructors.Crowdsale = [];
     crowdsale.parentsList.forEach((parent) => {
@@ -342,14 +353,8 @@ ${ writeTabs(tab2) }nextTokenOwner = _nextTokenOwner;
 
     return {
       meta,
-      token: {
-        parentsList: [...token.parentsList, ...postToken.parentsList],
-        importStatements: [...token.importStatements, ...postToken.importStatements],
-      },
-      crowdsale: {
-        parentsList: [...token.parentsList, ...postCrowdsale.parentsList],
-        importStatements: [...token.importStatements, ...postCrowdsale.importStatements],
-      },
+      token,
+      crowdsale,
       codes,
       constructors,
       initMigVars,

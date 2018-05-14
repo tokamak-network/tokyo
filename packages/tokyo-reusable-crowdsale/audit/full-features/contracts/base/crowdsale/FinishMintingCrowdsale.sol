@@ -7,8 +7,8 @@ import "./BaseCrowdsale.sol";
  * @notice FinishMintingCrowdsale prevent token generation after sale ended.
  */
 contract FinishMintingCrowdsale is BaseCrowdsale {
-  function finalizationSuccessHook() internal {
+  function afterGeneratorHook() internal {
     require(finishMinting());
-    super.finalizationSuccessHook();
+    super.afterGeneratorHook();
   }
 }

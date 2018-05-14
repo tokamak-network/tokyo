@@ -8,8 +8,9 @@ import "./base/crowdsale/MinimumPaymentCrowdsale.sol";
 import "./base/crowdsale/BlockIntervalCrowdsale.sol";
 import "./base/crowdsale/KYCCrowdsale.sol";
 import "./base/crowdsale/StagedCrowdsale.sol";
+import "./base/crowdsale/FinishMintingCrowdsale.sol";
 
-contract AuditFullFeaturesCrowdsale is BaseCrowdsale, MiniMeBaseCrowdsale, BonusCrowdsale, PurchaseLimitedCrowdsale, MinimumPaymentCrowdsale, BlockIntervalCrowdsale, KYCCrowdsale, StagedCrowdsale {
+contract AuditFullFeaturesCrowdsale is BaseCrowdsale, MiniMeBaseCrowdsale, BonusCrowdsale, PurchaseLimitedCrowdsale, MinimumPaymentCrowdsale, BlockIntervalCrowdsale, KYCCrowdsale, StagedCrowdsale, FinishMintingCrowdsale {
 
   bool public initialized;
 
@@ -29,7 +30,8 @@ contract AuditFullFeaturesCrowdsale is BaseCrowdsale, MiniMeBaseCrowdsale, Bonus
     KYCCrowdsale(
       parseAddress(args[4]))
     StagedCrowdsale(
-      parseUint(args[5])) public {}
+      parseUint(args[5]))
+    FinishMintingCrowdsale() public {}
   
 
   function parseBool(bytes32 b) internal pure returns (bool) {

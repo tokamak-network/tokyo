@@ -12,9 +12,9 @@ contract StagedCrowdsale is KYCCrowdsale {
 
   uint8 public numPeriods;
 
-  Period[] public periods;
+  Stage[] public stages;
 
-  struct Period {
+  struct Stage {
     uint128 cap;
     uint128 maxPurchaseLimit;
     uint128 minPurchaseLimit;
@@ -29,7 +29,7 @@ contract StagedCrowdsale is KYCCrowdsale {
     numPeriods = uint8(_numPeriods);
   }
 
-  function initPeriods(
+  function initStages(
     uint32[] _startTimes,
     uint32[] _endTimes,
     uint128[] _capRatios,
@@ -40,7 +40,7 @@ contract StagedCrowdsale is KYCCrowdsale {
   {
     uint len = numPeriods;
 
-    require(periods.length == 0);
+    require(stages.length == 0);
     // solium-disable
     require(len == _startTimes.length &&
       len == _endTimes.length &&
@@ -53,18 +53,18 @@ contract StagedCrowdsale is KYCCrowdsale {
     for (uint i = 0; i < len; i++) {
       require(_endTimes[i] >= _startTimes[i]);
 
-      uint periodCap;
+      uint stageCap;
 
       if (_capRatios[i] != 0) {
-        periodCap = cap.mul(uint(_capRatios[i])).div(coeff);
+        stageCap = cap.mul(uint(_capRatios[i])).div(coeff);
       } else {
-        periodCap = 0;
+        stageCap = 0;
       }
 
-      periods.push(Period({
+      stages.push(Stage({
         startTime: _startTimes[i],
         endTime: _endTimes[i],
-        cap: uint128(periodCap),
+        cap: uint128(stageCap),
         maxPurchaseLimit: _maxPurchaseLimits[i],
         minPurchaseLimit: _minPurchaseLimits[i],
         kyc: _kycs[i],
@@ -78,12 +78,12 @@ contract StagedCrowdsale is KYCCrowdsale {
   /**
    * @notice if period is on sale, return index of the period.
    */
-  function getPeriodIndex() public view returns (uint8 currentPeriod, bool onSale) {
+  function getStageIndex() public view returns (uint8 currentStage, bool onSale) {
     onSale = true;
-    Period memory p;
+    Stage memory p;
 
-    for (currentPeriod = 0; currentPeriod < periods.length; currentPeriod++) {
-      p = periods[currentPeriod];
+    for (currentStage = 0; currentStage < stages.length; currentStage++) {
+      p = stages[currentStage];
       if (p.startTime <= now && now <= p.endTime) {
         return;
       }
@@ -96,19 +96,19 @@ contract StagedCrowdsale is KYCCrowdsale {
    * @notice return if all period is finished.
    */
   function saleFinished() public view returns (bool) {
-    require(periods.length == numPeriods);
-    return periods[periods.length - 1].endTime < now;
+    require(stages.length == numPeriods);
+    return stages[stages.length - 1].endTime < now;
   }
 
 
   function validPeriods() internal view returns (bool) {
-    if (periods.length != numPeriods) {
+    if (stages.length != numPeriods) {
       return false;
     }
 
-    // check periods are overlapped.
-    for (uint8 i = 0; i < periods.length - 1; i++) {
-      if (periods[i].endTime >= periods[i + 1].startTime) {
+    // check stages are overlapped.
+    for (uint8 i = 0; i < stages.length - 1; i++) {
+      if (stages[i].endTime >= stages[i + 1].startTime) {
         return false;
       }
     }
@@ -122,14 +122,14 @@ contract StagedCrowdsale is KYCCrowdsale {
    */
   function calculateToFund(address _beneficiary, uint256 _weiAmount) internal view returns (uint256) {
     uint256 weiAmount = _weiAmount;
-    uint8 currentPeriod;
+    uint8 currentStage;
     bool onSale;
 
-    (currentPeriod, onSale) = getPeriodIndex();
+    (currentStage, onSale) = getStageIndex();
 
     require(onSale);
 
-    Period memory p = periods[currentPeriod];
+    Stage memory p = stages[currentStage];
 
     // Check kyc if needed for this period
     if (p.kyc) {
@@ -158,14 +158,14 @@ contract StagedCrowdsale is KYCCrowdsale {
   }
 
   function buyTokensPreHook(address _beneficiary, uint256 _toFund) internal {
-    uint8 currentPeriod;
+    uint8 currentStage;
     bool onSale;
 
-    (currentPeriod, onSale) = getPeriodIndex();
+    (currentStage, onSale) = getStageIndex();
 
     require(onSale);
 
-    Period storage p = periods[currentPeriod];
+    Stage storage p = stages[currentStage];
 
     p.weiRaised = uint128(_toFund.add(uint256(p.weiRaised)));
     super.buyTokensPreHook(_beneficiary, _toFund);

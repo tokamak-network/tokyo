@@ -9,7 +9,8 @@ import "../crowdsale/BlockIntervalCrowdsale.sol";
 import "../crowdsale/KYCCrowdsale.sol";
 import "../crowdsale/StagedCrowdsale.sol";
 
-contract SampleProjectCrowdsale is BaseCrowdsale, MiniMeBaseCrowdsale, BonusCrowdsale, PurchaseLimitedCrowdsale, MinimumPaymentCrowdsale, BlockIntervalCrowdsale, KYCCrowdsale, StagedCrowdsale {
+contract SampleProjectCrowdsale is BaseCrowdsale, MiniMeBaseCrowdsale, BonusCrowdsale,
+  PurchaseLimitedCrowdsale, MinimumPaymentCrowdsale, BlockIntervalCrowdsale, KYCCrowdsale, StagedCrowdsale {
 
   bool public initialized;
 

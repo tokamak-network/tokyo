@@ -6,7 +6,8 @@
     },
     "token_option": {
       "burnable": true,
-      "pausable": true
+      "pausable": true,
+      "no_mint_after_sale": true
     },
     "token_name": "For Audit",
     "token_symbol": "FA",
@@ -99,7 +100,7 @@
       "min_purchase_limit": "10000000000000000",
       "block_interval": 20
     },
-    "new_token_owner": "0x557678cf28594495ef4b08a6447726f931f8d787"
+    "new_token_owner": "0xcf7b6f1489129c94a98c79e4be659ea111c76397"
   },
   "multisig": {
     "use_multisig": true,

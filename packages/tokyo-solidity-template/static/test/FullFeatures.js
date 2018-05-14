@@ -38,7 +38,7 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
   // test parameteres
   const input = validate(getInput()).value;
   const etherAmount = getEtherAmount(input);
-  const periodMaxPurchaseLimits = input.sale.stages.map(s => new BigNumber(s.max_purchase_limit));
+  const stageMaxPurchaseLimits = input.sale.stages.map(s => new BigNumber(s.max_purchase_limit));
 
   const minEtherAmount = new BigNumber(input.sale.valid_purchase.min_purchase_limit);
   // a purchaser can fund
@@ -93,6 +93,9 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
   });
 
   it("check parameters", async () => {
+    (await crowdsale.owner())
+      .should.be.equal(owner);
+
     (await crowdsale.nextTokenOwner())
       .should.be.equal(input.sale.new_token_owner);
 
@@ -102,8 +105,8 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
     (await crowdsale.goal())
       .should.be.bignumber.equal(minCap);
 
-    const numPeriods = input.sale.stages.length;
-    for (let i = 0; i < numPeriods; i++) {
+    const numStages = input.sale.stages.length;
+    for (let i = 0; i < numStages; i++) {
       /* eslint-disable */
       const {
         start_time,
@@ -123,7 +126,7 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
         pStartTime,
         pEndTime,
         pKyc,
-      ] = await crowdsale.periods(i);
+      ] = await crowdsale.stages(i);
 
       pCap.should.be.bignumber.equal(maxCap.mul(cap_ratio).div(coeff));
       pMaxPurchaseLimit.should.be.bignumber.equal(max_purchase_limit);
@@ -534,7 +537,7 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
 });
 
 function getInput() {
-  return JSON.parse('{"project_name":"Audit Full Features","token":{"token_type":{"is_minime":true},"token_option":{"burnable":true,"pausable":true},"token_name":"For Audit","token_symbol":"FA","decimals":18},"sale":{"max_cap":"4000000000000000000000","min_cap":"1000000000000000000000","start_time":"2018/05/23 00:00:00","end_time":"2018/05/27 00:00:00","coeff":"1000","rate":{"is_static":false,"base_rate":"200","bonus":{"use_time_bonus":true,"use_amount_bonus":true,"time_bonuses":[{"bonus_time_stage":"2018/05/24 00:00:00","bonus_time_ratio":"100"},{"bonus_time_stage":"2018/05/26 00:00:00","bonus_time_ratio":"50"}],"amount_bonuses":[{"bonus_amount_stage":"100000000000000000000","bonus_amount_ratio":"200"},{"bonus_amount_stage":"10000000000000000000","bonus_amount_ratio":"100"},{"bonus_amount_stage":"1000000000000000000","bonus_amount_ratio":"50"}]}},"distribution":{"token":[{"token_holder":"crowdsale","token_ratio":"800"},{"token_holder":"locker","token_ratio":"100"},{"token_holder":"0x557678cf28594495ef4b08a6447726f931f8d787","token_ratio":"100"}],"ether":[{"ether_holder":"0x557678cf28594495ef4b08a6447726f931f8d787","ether_ratio":"800"},{"ether_holder":"0x557678cf28594495ef4b08a6447726f931f8d788","ether_ratio":"200"}]},"stages":[{"start_time":"2018/05/23 00:00:00","end_time":"2018/05/24 00:00:00","cap_ratio":"200","max_purchase_limit":"400000000000000000000","min_purchase_limit":"100000000000000","kyc":true},{"start_time":"2018/05/25 00:00:00","end_time":"2018/05/27 00:00:00","cap_ratio":"0","max_purchase_limit":"0","min_purchase_limit":"0","kyc":true}],"valid_purchase":{"max_purchase_limit":"2000000000000000000000","min_purchase_limit":"10000000000000000","block_interval":20},"new_token_owner":"0x557678cf28594495ef4b08a6447726f931f8d787"},"multisig":{"use_multisig":true,"infos":[{"num_required":1,"owners":["0x557678cf28594495ef4b08a6447726f931f8d787","0x557678cf28594495ef4b08a6447726f931f8d788"]},{"num_required":1,"owners":["0x557678cf28594495ef4b08a6447726f931f8d789","0x557678cf28594495ef4b08a6447726f931f8d78a"]}]},"locker":{"use_locker":true,"beneficiaries":[{"address":"0x557678cf28594495ef4b08a6447726f931f8d787","ratio":"200","is_straight":true,"release":[{"release_time":"2018/05/28 00:00:00","release_ratio":"300"},{"release_time":"2018/05/30 00:00:00","release_ratio":"1000"}]},{"address":"0x557678cf28594495ef4b08a6447726f931f8d788","ratio":"800","is_straight":false,"release":[{"release_time":"2018/05/27 00:00:00","release_ratio":"200"},{"release_time":"2018/05/28 00:00:00","release_ratio":"500"},{"release_time":"2018/05/30 00:00:00","release_ratio":"1000"}]}]}}');
+  return JSON.parse('{"project_name":"Audit Full Features","token":{"token_type":{"is_minime":true},"token_option":{"burnable":true,"pausable":true,"no_mint_after_sale":true},"token_name":"For Audit","token_symbol":"FA","decimals":18},"sale":{"max_cap":"4000000000000000000000","min_cap":"1000000000000000000000","start_time":"2018/05/23 00:00:00","end_time":"2018/05/27 00:00:00","coeff":"1000","rate":{"is_static":false,"base_rate":"200","bonus":{"use_time_bonus":true,"use_amount_bonus":true,"time_bonuses":[{"bonus_time_stage":"2018/05/24 00:00:00","bonus_time_ratio":"100"},{"bonus_time_stage":"2018/05/26 00:00:00","bonus_time_ratio":"50"}],"amount_bonuses":[{"bonus_amount_stage":"100000000000000000000","bonus_amount_ratio":"200"},{"bonus_amount_stage":"10000000000000000000","bonus_amount_ratio":"100"},{"bonus_amount_stage":"1000000000000000000","bonus_amount_ratio":"50"}]}},"distribution":{"token":[{"token_holder":"crowdsale","token_ratio":"800"},{"token_holder":"locker","token_ratio":"100"},{"token_holder":"0x557678cf28594495ef4b08a6447726f931f8d787","token_ratio":"100"}],"ether":[{"ether_holder":"0x557678cf28594495ef4b08a6447726f931f8d787","ether_ratio":"800"},{"ether_holder":"0x557678cf28594495ef4b08a6447726f931f8d788","ether_ratio":"200"}]},"stages":[{"start_time":"2018/05/23 00:00:00","end_time":"2018/05/24 00:00:00","cap_ratio":"200","max_purchase_limit":"400000000000000000000","min_purchase_limit":"100000000000000","kyc":true},{"start_time":"2018/05/25 00:00:00","end_time":"2018/05/27 00:00:00","cap_ratio":"0","max_purchase_limit":"0","min_purchase_limit":"0","kyc":true}],"valid_purchase":{"max_purchase_limit":"2000000000000000000000","min_purchase_limit":"10000000000000000","block_interval":20},"new_token_owner":"0xcf7b6f1489129c94a98c79e4be659ea111c76397"},"multisig":{"use_multisig":true,"infos":[{"num_required":1,"owners":["0x557678cf28594495ef4b08a6447726f931f8d787","0x557678cf28594495ef4b08a6447726f931f8d788"]},{"num_required":1,"owners":["0x557678cf28594495ef4b08a6447726f931f8d789","0x557678cf28594495ef4b08a6447726f931f8d78a"]}]},"locker":{"use_locker":true,"beneficiaries":[{"address":"0x557678cf28594495ef4b08a6447726f931f8d787","ratio":"200","is_straight":true,"release":[{"release_time":"2018/05/28 00:00:00","release_ratio":"300"},{"release_time":"2018/05/30 00:00:00","release_ratio":"1000"}]},{"address":"0x557678cf28594495ef4b08a6447726f931f8d788","ratio":"800","is_straight":false,"release":[{"release_time":"2018/05/27 00:00:00","release_ratio":"200"},{"release_time":"2018/05/28 00:00:00","release_ratio":"500"},{"release_time":"2018/05/30 00:00:00","release_ratio":"1000"}]}]}}');
 }
 
 /* eslint-disable complexity,camelcase */

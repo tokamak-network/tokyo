@@ -23,9 +23,9 @@ contract NoMintMiniMeToken is MiniMeToken {
    * @dev Function to stop minting new tokens.
    * @return True if the operation was successful.
    */
-  function finishMinting() onlyController canMint public returns (bool) {
+  function finishMinting() public onlyController canMint returns (bool) {
     mintingFinished = true;
-    emit MintFinished();
+    MintFinished();
     return true;
   }
 }
