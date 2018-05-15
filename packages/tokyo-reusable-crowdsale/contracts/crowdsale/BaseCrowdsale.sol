@@ -4,8 +4,9 @@ import "../zeppelin/math/SafeMath.sol";
 import "../vault/MultiHolderVault.sol";
 import "../locker/Locker.sol";
 import "../zeppelin/token/ERC20/ERC20Basic.sol";
+import "../zeppelin/lifecycle/Pausable.sol";
 
-contract BaseCrowdsale is Ownable {
+contract BaseCrowdsale is Pausable {
   using SafeMath for uint256;
 
   Locker public locker;     // token locker
@@ -55,7 +56,7 @@ contract BaseCrowdsale is Ownable {
     buyTokens(msg.sender);
   }
 
-  function buyTokens(address beneficiary) public payable {
+  function buyTokens(address beneficiary) public payable whenNotPaused {
     require(beneficiary != address(0));
     require(validPurchase());
 
