@@ -6,6 +6,7 @@
     "packages/tokyo-reusable-crowdsale/audit*"
   ],
   "scripts": {
+    "clean": "rm -rf ./node_modules && rm -rf packages/*/node_modules",
     "bootstrap": "lerna bootstrap",
     "test": "lerna run test",
     "prepare": "lerna run prepare"
