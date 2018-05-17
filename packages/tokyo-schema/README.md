@@ -47,7 +47,10 @@ Uint : __string__ parsed with `bignumber.js` for unsigned integer.
       is_static: Boolean, // true if no bonus, false if dynamic rate
       base_rate: Uint,    // rate without bonus.
                           // token amount = ether amount * rate
+
       bonus: { // only required for dynamic rate with bonus
+               // token rate = base rate * (time bonus + amount bonus + coeff) / coeff
+
         use_time_bonus : Boolean,
         use_amount_bonus : Boolean,
 
@@ -92,7 +95,7 @@ Uint : __string__ parsed with `bignumber.js` for unsigned integer.
         {
           // `ether_holder` can only 2 type of string as value.
           //  - "multisig<N>": N'th multisig wallet.
-          //    multi-signature wallet contracts will deployed according to
+          //    multi-signature wallet contracts will be deployed according to
           //    "multisig" section. see examples
           //  - Account: ethereum address to receive Ether
           ether_holder: "multisig" | Account,
@@ -102,42 +105,50 @@ Uint : __string__ parsed with `bignumber.js` for unsigned integer.
     },
 
     // Define sale stages seperated by times.
-    // independent cap & kyc & max / min purchase limits could be set.
+    // independent cap / kyc / max & min purchase limits could be set.
     stages: [
       {
-        start_time: Time, // start time of stage
-        end_time: Time,   // end time of stage
+        start_time: Time, // start time of stage, inclusive
+        end_time: Time,   // end time of stage, inclusive
+                          // start time of next stage should be later than end time
+                          // of previous stage
+
         cap_ratio: Uint,  // 0 for no seperated cap for the stage.
                           // refund partial amount of ether
                           // if raised weia amount is over cap
+
         min_purchase_limit: Uint, // 0 for no limit,
                                   // reject token purchase
                                   // over this amount of ether
+
         max_purchase_limit: Uint, // 0 for no limit,
-                                  // reject token purchase
-                                  // under this amount of ether
+                                  // limit purchaser from funding too many ether.
+                                  // this doesn't reject TX, but reduce msg.value
+                                  // to fit this limit and refund not-funded ether.
         kyc: Boolean, // check kyc for this stage
       }
     ],
     valid_purchase: {
-      max_purchase_limit : Uint, // ( 0 for no limit )
-                                 // limit purchaser from funding too many ether.
-                                 // this doesn't reject TX, but reduce msg.value to fit this limit
-                                 // and refund not-funded ether.
-      min_purchase_limit : Uint, // ( 0 for no limit )
+      min_purchase_limit : Uint, // 0 for no limit
                                  // reject token purchase
                                  // under this amount of ether
-      block_interval : Number    // ( 0 for no limit )
+
+      max_purchase_limit : Uint, // 0 for no limit
+                                 // limit purchaser from funding too many ether.
+                                 // this doesn't reject TX, but reduce msg.value
+                                 // to fit this limit and refund not-funded ether.
+
+      block_interval : Number    // 0 for no limit
                                  // only accept token purchase
                                  // if last token purchase TX's block number
                                  // is less than current block number - interval
     },
-    new_token_owner : Account,   // account to be held ownership fo token after
-                                 // sale is finished.
+    new_token_owner : Account,   // account to hold ownership of token after
+                                 // sale is finalized.
     multisig : {
       use_multisig : Boolean,
 
-      // each info is parameter for multisig wallet contract's constructor
+      // each info is used as parameters for multisig wallet contract's constructor
       // see detail explanation: https://github.com/Onther-Tech/tokyo-reusable-crowdsale/blob/a7342431f8fc635702de033f9d2b6bac67f274d9/contracts/wallet/MultiSigWallet.sol
       infos: [
         {
@@ -153,10 +164,12 @@ Uint : __string__ parsed with `bignumber.js` for unsigned integer.
   locker : {
     use_locker : Boolean,
     beneficiaries: [{
-      address: Account | Multisig, // token beneficiaries
-      ratio: Uint // The ratio designated to this beneficiary
-      is_straight : Boolean, // locking type : straight, variable
-      release : [ { relase_time: Time, release_ratio: Uint } ] // A single release for simple locker (a single release time & 100% of the token)
+      address: Account | Multisig,       // token beneficiaries
+      ratio: Uint                        // The ratio designated to this beneficiary
+      is_straight : Boolean,             // locking type : straight, variable
+
+      // A single release for simple locker (a single release time & 100% of the token)
+      release : [ { relase_time: Time, release_ratio: Uint } ]
     }]
   }
 }
