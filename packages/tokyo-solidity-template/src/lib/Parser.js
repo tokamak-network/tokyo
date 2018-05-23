@@ -1,4 +1,3 @@
-import moment from "moment";
 import {
   writeTabs,
   convertAddress,
@@ -113,6 +112,7 @@ ${ writeTabs(tab2) });
     // input.sale.distribution.tokens
     for (const { token_holder, token_ratio } of input.sale.distribution.token) {
       if (["crowdsale", "locker"].includes(token_holder)) {
+        // eslint-disable-next-line no-continue
         continue; // both are included in BaseCrowdsale constructor
       }
 
@@ -164,8 +164,8 @@ ${ writeTabs(tab2) });
       }
 
       if (input.token.token_option.pausable) {
-        token.parentsList.push("Pausable");
-        token.importStatements.push("import \"./base/zeppelin/lifecycle/Pausable.sol\";");
+        token.parentsList.push("PausableToken");
+        token.importStatements.push("import \"./base/zeppelin/token/PausableToken.sol\";");
       }
 
       if (input.token.token_option.no_mint_after_sale) {
