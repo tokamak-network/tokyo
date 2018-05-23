@@ -1,0 +1,217 @@
+{
+  "project_name": "Sample2",
+  "token": {
+    "token_type": {
+      "is_minime": false
+    },
+    "token_option": {
+      "burnable": true,
+      "pausable": true,
+      "no_mint_after_sale" : true
+    },
+    "token_name": "Sample2 Token",
+    "token_symbol": "ALP",
+    "decimals": 18
+  },
+  "sale": {
+    "max_cap": "37500000000000000000000",
+    "min_cap": "5000000000000000000000",
+    "start_time": "2018/05/07 16:00:00",
+    "end_time": "2018/06/30 16:00:00",
+    "coeff": "1000",
+    "rate": {
+      "is_static": false,
+      "base_rate": "200000",
+      "bonus": {
+        "use_time_bonus": true,
+        "use_amount_bonus": false,
+        "time_bonuses": [
+          {
+            "bonus_time_stage": "2018/06/14 16:00:00",
+            "bonus_time_ratio": "300"
+          },
+          {
+            "bonus_time_stage": "2018/06/18 16:00:00",
+            "bonus_time_ratio": "200"
+          },
+          {
+            "bonus_time_stage": "2018/06/22 16:00:00",
+            "bonus_time_ratio": "150"
+          },
+          {
+            "bonus_time_stage": "2018/06/26 16:00:00",
+            "bonus_time_ratio": "100"
+          },
+          {
+            "bonus_time_stage": "2018/06/30 16:00:00",
+            "bonus_time_ratio": "0"
+          }
+        ],
+        "amount_bonuses": []
+      }
+    },
+    "distribution": {
+      "token": [
+        {
+          "token_holder": "crowdsale",
+          "token_ratio": "300"
+        },
+        {
+          "token_holder": "locker",
+          "token_ratio": "100"
+        },
+        {
+          "token_holder": "multisig0",
+          "token_ratio": "200"
+        },
+        {
+          "token_holder": "multisig1",
+          "token_ratio": "200"
+        },
+        {
+          "token_holder": "multisig2",
+          "token_ratio": "200"
+        }
+      ],
+      "ether": [
+        {
+          "ether_holder": "multisig3",
+          "ether_ratio": "330"
+        },
+        {
+          "ether_holder": "multisig4",
+          "ether_ratio": "330"
+        },
+        {
+          "ether_holder": "multisig5",
+          "ether_ratio": "330"
+        },
+        {
+          "ether_holder": "0x603344CEe73C5CeE7186BD6FB15Fc6B0A8b95908",
+          "ether_ratio": "10"
+        }
+      ]
+    },
+    "stages": [
+      {
+        "start_time": "2018/05/07 16:00:00",
+        "end_time": "2018/06/14 16:00:00",
+        "cap_ratio": "0",
+        "max_purchase_limit": "0",
+        "min_purchase_limit": "0",
+        "kyc": true
+      },
+      {
+        "start_time": "2018/06/14 16:00:00",
+        "end_time": "2018/06/30 16:00:00",
+        "cap_ratio": "1000",
+        "max_purchase_limit": "1000000000000000000000",
+        "min_purchase_limit": "100000000000000000",
+        "kyc": true
+      }
+    ],
+    "valid_purchase": {
+      "max_purchase_limit": "0",
+      "min_purchase_limit": "0",
+      "block_interval": 5
+    },
+    "new_token_owner": "0x0000000000000000000000000000000000000001"
+  },
+  "multisig": {
+    "use_multisig": true,
+    "infos": [
+      {
+        "num_required": 2,
+        "owners": [
+          "0x0000000000000000000000000000000000000002",
+          "0x0000000000000000000000000000000000000003",
+          "0x0000000000000000000000000000000000000004"
+        ]
+      },
+      {
+        "num_required": 2,
+        "owners": [
+          "0x0000000000000000000000000000000000000005",
+          "0x0000000000000000000000000000000000000006",
+          "0x0000000000000000000000000000000000000007"
+        ]
+      },
+      {
+        "num_required": 2,
+        "owners": [
+          "0x0000000000000000000000000000000000000008",
+          "0x0000000000000000000000000000000000000009",
+          "0x000000000000000000000000000000000000000a"
+        ]
+      },
+      {
+        "num_required": 2,
+        "owners": [
+          "0x000000000000000000000000000000000000000b",
+          "0x000000000000000000000000000000000000000c",
+          "0x000000000000000000000000000000000000000d"
+        ]
+      },
+      {
+        "num_required": 2,
+        "owners": [
+          "0x000000000000000000000000000000000000000e",
+          "0x000000000000000000000000000000000000000f",
+          "0x0000000000000000000000000000000000000010"
+        ]
+      },
+      {
+        "num_required": 2,
+        "owners": [
+          "0x0000000000000000000000000000000000000011",
+          "0x0000000000000000000000000000000000000012",
+          "0x0000000000000000000000000000000000000013"
+        ]
+      }
+    ]
+  },
+  "locker": {
+    "use_locker": true,
+    "beneficiaries": [
+      {
+        "address": "0x0000000000000000000000000000000000000014",
+        "ratio": "1000",
+        "is_straight": false,
+        "release": [
+          {
+            "release_time": "2019/06/30 16:00:00",
+            "release_ratio": "300"
+          },
+          {
+            "release_time": "2019/10/30 16:00:00",
+            "release_ratio": "400"
+          },
+          {
+            "release_time": "2020/02/29 16:00:00",
+            "release_ratio": "500"
+          },
+          {
+            "release_time": "2020/06/30 16:00:00",
+            "release_ratio": "600"
+          },
+          {
+            "release_time": "2020/10/30 16:00:00",
+            "release_ratio": "700"
+          },
+          {
+            "release_time": "2021/02/28 16:00:00",
+            "release_ratio": "800"
+          },
+          {
+            "release_time": "2021/06/30 16:00:00",
+            "release_ratio": "900"
+          },
+          {
+            "release_time": "2021/10/30 16:00:00",
+            "release_ratio": "1000"
+          }
+        ]
+      }
+    ]
+  }
+}
