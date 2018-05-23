@@ -1,6 +1,7 @@
-import BigNumber from "BigNumber.js";
+import BigNumber from "bignumber.js";
 import last from "lodash/last";
 
+// eslint-disable-next-line import/prefer-default-export
 export function testValue(data) {
   if (!data.sale.coeff.div(10).isInteger()) {
     return new Error("Coeff must be base 10 number");
