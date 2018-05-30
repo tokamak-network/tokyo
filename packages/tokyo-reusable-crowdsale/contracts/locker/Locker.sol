@@ -115,6 +115,10 @@ contract Locker is Ownable {
     _;
   }
 
+  event StateChanged(State _state);
+  event Locked(address indexed _beneficiary, bool _isStraight);
+  event Released(address indexed _beneficiary, uint256 _amount);
+
   function Locker(address _token, uint _coeff, address[] _beneficiaries, uint[] _ratios) public {
     require(_token != address(0));
     require(_beneficiaries.length == _ratios.length);
@@ -148,6 +152,7 @@ contract Locker is Ownable {
 
     // set locker as active state
     state = State.Active;
+    emit StateChanged(state);
   }
 
   function getTotalLockedAmounts(address _beneficiary)
@@ -218,10 +223,12 @@ contract Locker is Ownable {
 
     // lock beneficiary
     locked[_beneficiary] = true;
+    emit Locked(_beneficiary, _isStraight);
 
     //  if all beneficiaries locked, change Locker state to change
     if (numLocks == numBeneficiaries) {
       state = State.Ready;
+      emit StateChanged(state);
     }
   }
 
@@ -243,9 +250,11 @@ contract Locker is Ownable {
 
     if (withdrawAmount == initialBalance) {
       state = State.Drawn;
+      emit StateChanged(state);
     }
 
     token.transfer(msg.sender, releasableAmount);
+    emit Released(msg.sender, releasableAmount);
   }
 
   function getReleasableAmount(address _beneficiary) internal view returns (uint) {

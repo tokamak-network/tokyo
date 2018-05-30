@@ -24,6 +24,8 @@ contract HolderBase is Ownable {
 
   Holder[] public holders;
 
+  event Distributed();
+
   function HolderBase(uint256 _ratioCoeff) public {
     require(_ratioCoeff != 0);
     ratioCoeff = _ratioCoeff;
@@ -68,6 +70,8 @@ contract HolderBase is Ownable {
 
       holders[i].addr.transfer(holderAmount);
     }
+
+    emit Distributed(); // A single log to reduce gas
   }
 
   /**
@@ -84,5 +88,7 @@ contract HolderBase is Ownable {
 
       token.transfer(holders[i].addr, holderAmount);
     }
+
+    emit Distributed(); // A single log to reduce gas
   }
 }
