@@ -1,7 +1,7 @@
 import moment from "moment";
 import get from "lodash/get";
 import range from "lodash/range";
-import schema from "tokyo-schema";
+import validate from "tokyo-schema";
 
 import ether from "./helpers/ether";
 import { advanceBlock, advanceManyBlock } from "./helpers/advanceToBlock";
@@ -35,9 +35,9 @@ contract("RankingBallGoldCrowdsale", async ([ owner, other, investor1, investor2
   const gas = 2000000;
 
   // test parameteres
-  const input = schema.validate(getInput()).value;
+  const input = validate(getInput()).value;
   const timeBonuses = input.sale.rate.bonus
-    .time_bonuses.map(b => b.bonus_time_ratio); // 20%, 15%, 10%, 5%
+    .time_bonuses.map(b => b.bonus_time_ratio); // 60%, 20%, 15%, 10%, 5%
 
   const baseRate = new BigNumber(input.sale.rate.base_rate);
   const coeff = new BigNumber(input.sale.coeff); // 10000
@@ -102,13 +102,15 @@ contract("RankingBallGoldCrowdsale", async ([ owner, other, investor1, investor2
     });
   });
 
-  describe("After start time (time bonus 20%)", async () => {
-    const targetTime = input.sale.start_time;
-    const scenarioIndex = 1;
+  describe("After start time (bonus 60%)", async () => {
     const timeBonusIndex = 0;
     const timeBonus = timeBonuses[ timeBonusIndex ];
+    const bonusString = timeBonus.div(coeff).mul(100).toString();
 
-    it(`increase time to ${ targetTime }`, async () => {
+    const targetTime = input.sale.start_time;
+    const targetTimeString = moment.unix(targetTime).format("MM/DD HH:mm");
+
+    it(`increase time to ${ targetTimeString } with bonus ${ bonusString }%`, async () => {
       await increaseTimeTo(targetTime)
         .should.be.fulfilled;
     });
@@ -123,7 +125,7 @@ contract("RankingBallGoldCrowdsale", async ([ owner, other, investor1, investor2
 
     it("accept buying tokens for valid account", async () => {
       const investor = investor1;
-      const investAmount = ether(10); // 39990 ether remains
+      const investAmount = ether(10000); // 30000 ether remains
       const rate = calcRate(baseRate, timeBonus, coeff);
 
       const tokenAmount = investAmount.mul(rate);
@@ -146,7 +148,7 @@ contract("RankingBallGoldCrowdsale", async ([ owner, other, investor1, investor2
       }).should.be.rejectedWith(EVMThrow);
     });
 
-    describe(`Over max cap scenario #${ scenarioIndex }`, async () => {
+    describe("Over max cap scenario", async () => {
       const snapshot2 = new Snapshot();
 
       before(snapshot2.captureContracts);
@@ -155,7 +157,8 @@ contract("RankingBallGoldCrowdsale", async ([ owner, other, investor1, investor2
       it("accept buying tokens over max cap", async () => {
         const investor = investor1;
         const investAmount = maxCap;
-        const fundedAmount = maxCap.sub(ether(10));
+        const weiRaised = await crowdsale.weiRaised();
+        const fundedAmount = maxCap.sub(weiRaised);
 
         const rate = calcRate(baseRate, timeBonus, coeff);
 
@@ -178,15 +181,16 @@ contract("RankingBallGoldCrowdsale", async ([ owner, other, investor1, investor2
     });
   });
 
-  describe("After start time (time bonus 15%)", async () => {
-    const scenarioIndex = 2;
+  describe("After start time (bonus 20%)", async () => {
     const timeBonusIndex = 1;
     const timeBonus = timeBonuses[ timeBonusIndex ];
+    const bonusString = timeBonus.div(coeff).mul(100).toString();
 
     const targetTime = input.sale.rate.bonus
       .time_bonuses[ timeBonusIndex - 1 ].bonus_time_stage + 1;
+    const targetTimeString = moment.unix(targetTime).format("MM/DD HH:mm");
 
-    it(`increase time to ${ targetTime }`, async () => {
+    it(`increase time to ${ targetTimeString } with bonus ${ bonusString }%`, async () => {
       await increaseTimeTo(targetTime)
         .should.be.fulfilled;
     });
@@ -201,7 +205,7 @@ contract("RankingBallGoldCrowdsale", async ([ owner, other, investor1, investor2
 
     it("accept buying tokens for valid account", async () => {
       const investor = investor3;
-      const investAmount = ether(100); // 39890 ether remains
+      const investAmount = ether(100); // 29900 ether remains
       const rate = calcRate(baseRate, timeBonus, coeff);
 
       const tokenAmount = investAmount.mul(rate);
@@ -224,16 +228,17 @@ contract("RankingBallGoldCrowdsale", async ([ owner, other, investor1, investor2
       }).should.be.rejectedWith(EVMThrow);
     });
 
-    describe(`Over max cap scenario #${ scenarioIndex }`, async () => {
+    describe("Over max cap scenario", async () => {
       const snapshot2 = new Snapshot();
 
       before(snapshot2.captureContracts);
       after(snapshot2.restoreContracts);
 
-      it("accept buying tokens over stage max cap", async () => {
+      it("accept buying tokens over max cap", async () => {
         const investor = investor2;
         const investAmount = maxCap;
-        const fundedAmount = investAmount.sub(ether(110));
+        const weiRaised = await crowdsale.weiRaised();
+        const fundedAmount = maxCap.sub(weiRaised);
 
         const rate = calcRate(baseRate, timeBonus, coeff);
 
@@ -256,15 +261,16 @@ contract("RankingBallGoldCrowdsale", async ([ owner, other, investor1, investor2
     });
   });
 
-  describe("After start time (time bonus 10%)", async () => {
-    const scenarioIndex = 3;
+  describe("After start time (bonus 15%)", async () => {
     const timeBonusIndex = 2;
     const timeBonus = timeBonuses[ timeBonusIndex ];
+    const bonusString = timeBonus.div(coeff).mul(100).toString();
 
     const targetTime = input.sale.rate.bonus
       .time_bonuses[ timeBonusIndex - 1 ].bonus_time_stage + 1;
+    const targetTimeString = moment.unix(targetTime).format("MM/DD HH:mm");
 
-    it(`increase time to ${ targetTime }`, async () => {
+    it(`increase time to ${ targetTimeString } with bonus ${ bonusString }%`, async () => {
       await increaseTimeTo(targetTime)
         .should.be.fulfilled;
     });
@@ -279,7 +285,7 @@ contract("RankingBallGoldCrowdsale", async ([ owner, other, investor1, investor2
 
     it("accept buying tokens for valid account", async () => {
       const investor = investor3;
-      const investAmount = ether(1000); // 38890 ether remains
+      const investAmount = ether(1000); // 28900 ether remains
       const rate = calcRate(baseRate, timeBonus, coeff);
 
       const tokenAmount = investAmount.mul(rate);
@@ -303,16 +309,17 @@ contract("RankingBallGoldCrowdsale", async ([ owner, other, investor1, investor2
       }).should.be.rejectedWith(EVMThrow);
     });
 
-    describe(`Over max cap scenario #${ scenarioIndex }`, async () => {
+    describe("Over max cap scenario", async () => {
       const snapshot2 = new Snapshot();
 
       before(snapshot2.captureContracts);
       after(snapshot2.restoreContracts);
 
-      it("accept buying tokens over stage max cap", async () => {
+      it("accept buying tokens over max cap", async () => {
         const investor = investor2;
         const investAmount = maxCap;
-        const fundedAmount = investAmount.sub(ether(1110));
+        const weiRaised = await crowdsale.weiRaised();
+        const fundedAmount = maxCap.sub(weiRaised);
 
         const rate = calcRate(baseRate, timeBonus, coeff);
 
@@ -335,15 +342,16 @@ contract("RankingBallGoldCrowdsale", async ([ owner, other, investor1, investor2
     });
   });
 
-  describe("After start time (time bonus 5%)", async () => {
-    const scenarioIndex = 4;
+  describe("After start time (bonus 10%)", async () => {
     const timeBonusIndex = 3;
     const timeBonus = timeBonuses[ timeBonusIndex ];
+    const bonusString = timeBonus.div(coeff).mul(100).toString();
 
     const targetTime = input.sale.rate.bonus
       .time_bonuses[ timeBonusIndex - 1 ].bonus_time_stage + 1;
+    const targetTimeString = moment.unix(targetTime).format("MM/DD HH:mm");
 
-    it(`increase time to ${ targetTime }`, async () => {
+    it(`increase time to ${ targetTimeString } with bonus ${ bonusString }%`, async () => {
       await increaseTimeTo(targetTime)
         .should.be.fulfilled;
     });
@@ -358,7 +366,7 @@ contract("RankingBallGoldCrowdsale", async ([ owner, other, investor1, investor2
 
     it("accept buying tokens for valid account", async () => {
       const investor = investor3;
-      const investAmount = ether(10000); // 28890 ether remains
+      const investAmount = ether(10000); // 18900 ether remains
       const rate = calcRate(baseRate, timeBonus, coeff);
 
       const tokenAmount = investAmount.mul(rate);
@@ -382,16 +390,17 @@ contract("RankingBallGoldCrowdsale", async ([ owner, other, investor1, investor2
       }).should.be.rejectedWith(EVMThrow);
     });
 
-    describe(`Over max cap scenario #${ scenarioIndex }`, async () => {
+    describe("Over max cap scenario", async () => {
       const snapshot2 = new Snapshot();
 
       before(snapshot2.captureContracts);
       after(snapshot2.restoreContracts);
 
-      it("accept buying tokens over stage max cap", async () => {
+      it("accept buying tokens over max cap", async () => {
         const investor = investor2;
         const investAmount = maxCap;
-        const fundedAmount = investAmount.sub(ether(11110));
+        const weiRaised = await crowdsale.weiRaised();
+        const fundedAmount = maxCap.sub(weiRaised);
 
         const rate = calcRate(baseRate, timeBonus, coeff);
 
@@ -414,15 +423,16 @@ contract("RankingBallGoldCrowdsale", async ([ owner, other, investor1, investor2
     });
   });
 
-  describe("After start time (time bonus 0%)", async () => {
-    const scenarioIndex = 5;
+  describe("After start time (bonus 5%)", async () => {
     const timeBonusIndex = 4;
-    const timeBonus = new BigNumber(0);
+    const timeBonus = timeBonuses[ timeBonusIndex ];
+    const bonusString = timeBonus.div(coeff).mul(100).toString();
 
     const targetTime = input.sale.rate.bonus
       .time_bonuses[ timeBonusIndex - 1 ].bonus_time_stage + 1;
+    const targetTimeString = moment.unix(targetTime).format("MM/DD HH:mm");
 
-    it(`increase time to ${ targetTime }`, async () => {
+    it(`increase time to ${ targetTimeString } with bonus ${ bonusString }%`, async () => {
       await increaseTimeTo(targetTime)
         .should.be.fulfilled;
     });
@@ -437,7 +447,7 @@ contract("RankingBallGoldCrowdsale", async ([ owner, other, investor1, investor2
 
     it("accept buying tokens for valid account", async () => {
       const investor = investor3;
-      const investAmount = ether(10000); // 18890 ether remains
+      const investAmount = ether(10000); // 8900 ether remains
       const rate = calcRate(baseRate, timeBonus, coeff);
 
       const tokenAmount = investAmount.mul(rate);
@@ -461,16 +471,98 @@ contract("RankingBallGoldCrowdsale", async ([ owner, other, investor1, investor2
       }).should.be.rejectedWith(EVMThrow);
     });
 
-    describe(`Over max cap scenario #${ scenarioIndex }`, async () => {
+    describe("Over max cap scenario", async () => {
       const snapshot2 = new Snapshot();
 
       before(snapshot2.captureContracts);
       after(snapshot2.restoreContracts);
 
-      it("accept buying tokens over stage max cap", async () => {
+      it("accept buying tokens over max cap", async () => {
         const investor = investor2;
         const investAmount = maxCap;
-        const fundedAmount = investAmount.sub(ether(21110));
+        const weiRaised = await crowdsale.weiRaised();
+        const fundedAmount = maxCap.sub(weiRaised);
+
+        const rate = calcRate(baseRate, timeBonus, coeff);
+
+        const tokenAmount = fundedAmount.mul(rate);
+        const tokenBalance = await token.balanceOf(investor);
+
+        await advanceBlocks();
+        await sendTransaction({
+          from: investor, to: crowdsale.address, value: investAmount, gas,
+        }).should.be.fulfilled;
+
+        (await token.balanceOf(investor))
+          .should.be.bignumber.equal(tokenBalance.add(tokenAmount));
+      });
+
+      it("should finalize crowdsale", async () => {
+        await crowdsale.finalize()
+          .should.be.fulfilled;
+      });
+    });
+  });
+
+  describe("After start time (bonus 0%)", async () => {
+    const timeBonusIndex = 5;
+    const timeBonus = new BigNumber(0);
+    const bonusString = timeBonus.div(coeff).mul(100).toString();
+
+    const targetTime = input.sale.rate.bonus
+      .time_bonuses[ timeBonusIndex - 1 ].bonus_time_stage + 1;
+    const targetTimeString = moment.unix(targetTime).format("MM/DD HH:mm");
+
+    it(`increase time to ${ targetTimeString } with bonus ${ bonusString }%`, async () => {
+      await increaseTimeTo(targetTime)
+        .should.be.fulfilled;
+    });
+
+    it("reject buying tokens for unknown account", async () => {
+      const investAmount = ether(10);
+
+      await sendTransaction({
+        from: other, to: crowdsale.address, value: investAmount, gas,
+      }).should.be.rejectedWith(EVMThrow);
+    });
+
+    it("accept buying tokens for valid account", async () => {
+      const investor = investor3;
+      const investAmount = ether(1000); // 7900 ether remains
+      const rate = calcRate(baseRate, timeBonus, coeff);
+
+      const tokenAmount = investAmount.mul(rate);
+      const tokenBalance = await token.balanceOf(investor);
+
+      await advanceBlocks();
+      await sendTransaction({
+        from: investor, to: crowdsale.address, value: investAmount, gas,
+      }).should.be.fulfilled;
+
+      (await token.balanceOf(investor))
+        .should.be.bignumber.equal(tokenBalance.add(tokenAmount));
+    });
+
+    it("reject buying tokens within a few blocks", async () => {
+      const investor = investor3;
+      const investAmount = ether(10);
+
+      await sendTransaction({
+        from: investor, to: crowdsale.address, value: investAmount, gas,
+      }).should.be.rejectedWith(EVMThrow);
+    });
+
+    describe("Over max cap scenario", async () => {
+      const snapshot2 = new Snapshot();
+
+      before(snapshot2.captureContracts);
+      after(snapshot2.restoreContracts);
+
+      it("accept buying tokens over max cap", async () => {
+        const investor = investor2;
+        const investAmount = maxCap;
+        const weiRaised = await crowdsale.weiRaised();
+        const fundedAmount = maxCap.sub(weiRaised);
 
         const rate = calcRate(baseRate, timeBonus, coeff);
 
@@ -495,8 +587,9 @@ contract("RankingBallGoldCrowdsale", async ([ owner, other, investor1, investor2
 
   describe("After sale period ended", async () => {
     const targetTime = input.sale.end_time + 1;
+    const targetTimeString = moment.unix(targetTime).format("MM/DD HH:mm");
 
-    it(`increase time to ${ targetTime }`, async () => {
+    it(`increase time to ${ targetTimeString }`, async () => {
       await increaseTimeTo(targetTime)
         .should.be.fulfilled;
     });
@@ -553,7 +646,9 @@ contract("RankingBallGoldCrowdsale", async ([ owner, other, investor1, investor2
 });
 
 function getInput() {
+  /* eslint-disable */
   return require("../input.json");
+  /* eslint-enable */
 }
 
 function calcRate(baseRate, bonus, coeff) {

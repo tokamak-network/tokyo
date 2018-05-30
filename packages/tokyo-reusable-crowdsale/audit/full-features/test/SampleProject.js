@@ -1,7 +1,7 @@
 import moment from "moment";
 import get from "lodash/get";
 import range from "lodash/range";
-import schema from "tokyo-schema";
+import validate from "tokyo-schema";
 
 import ether from "./helpers/ether";
 import { advanceBlock, advanceManyBlock } from "./helpers/advanceToBlock";
@@ -35,7 +35,7 @@ contract("SampleProjectCrowdsale", async ([ owner, other, investor1, investor2, 
   const gas = 2000000;
 
   // test parameteres
-  const input = schema.validate(getInput()).value;
+  const input = validate(getInput()).value;
   const etherAmount = getEtherAmount(input);
   const periodMaxPurchaseLimits = input.sale.stages.map(s => new BigNumber(s.max_purchase_limit));
 
