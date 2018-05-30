@@ -149,7 +149,7 @@ contract StagedCrowdsale is KYCCrowdsale {
       uint256 postWeiRaised = uint256(p.weiRaised).add(weiAmount);
 
       if (postWeiRaised > p.cap) {
-        weiAmount = uint256(p.cap).sub(weiRaised);
+        weiAmount = uint256(p.cap).sub(p.weiRaised);
       }
     }
 
