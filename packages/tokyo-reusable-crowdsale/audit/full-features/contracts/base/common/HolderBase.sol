@@ -12,6 +12,7 @@ import "../zeppelin/token/ERC20/ERC20.sol";
 contract HolderBase is Ownable {
   using SafeMath for uint256;
 
+  uint8 public constant MAX_HOLDERS = 64; // TODO: tokyo-input should verify # of holders
   uint256 public ratioCoeff;
   bool public distributed;
   bool public initialized;
@@ -22,6 +23,8 @@ contract HolderBase is Ownable {
   }
 
   Holder[] public holders;
+
+  event Distributed();
 
   function HolderBase(uint256 _ratioCoeff) public {
     require(_ratioCoeff != 0);
@@ -35,12 +38,15 @@ contract HolderBase is Ownable {
   function initHolders(address[] _addrs, uint96[] _ratios) public onlyOwner {
     require(!initialized);
     require(holders.length == 0);
+    require(_addrs.length != 0);
+    require(_addrs.length <= MAX_HOLDERS);
     require(_addrs.length == _ratios.length);
+
     uint256 accRatio;
 
     for(uint8 i = 0; i < _addrs.length; i++) {
       holders.push(Holder(_addrs[i], _ratios[i]));
-      accRatio = accRatio.add(uint96(_ratios[i]));
+      accRatio = accRatio.add(uint256(_ratios[i]));
     }
 
     require(accRatio <= ratioCoeff);
@@ -64,6 +70,8 @@ contract HolderBase is Ownable {
 
       holders[i].addr.transfer(holderAmount);
     }
+
+    emit Distributed(); // A single log to reduce gas
   }
 
   /**
@@ -80,5 +88,7 @@ contract HolderBase is Ownable {
 
       token.transfer(holders[i].addr, holderAmount);
     }
+
+    emit Distributed(); // A single log to reduce gas
   }
 }

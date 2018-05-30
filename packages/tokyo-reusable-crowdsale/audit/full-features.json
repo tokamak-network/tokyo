@@ -16,8 +16,8 @@
   "sale": {
     "max_cap": "4000000000000000000000",
     "min_cap": "1000000000000000000000",
-    "start_time": "2018/05/23 00:00:00",
-    "end_time": "2018/05/27 00:00:00",
+    "start_time": "2019/05/23 00:00:00",
+    "end_time": "2019/05/27 00:00:00",
     "coeff": "1000",
     "rate": {
       "is_static": false,
@@ -27,11 +27,11 @@
         "use_amount_bonus": true,
         "time_bonuses": [
           {
-            "bonus_time_stage": "2018/05/24 00:00:00",
+            "bonus_time_stage": "2019/05/24 00:00:00",
             "bonus_time_ratio": "100"
           },
           {
-            "bonus_time_stage": "2018/05/26 00:00:00",
+            "bonus_time_stage": "2019/05/26 00:00:00",
             "bonus_time_ratio": "50"
           }
         ],
@@ -79,16 +79,16 @@
     },
     "stages": [
       {
-        "start_time": "2018/05/23 00:00:00",
-        "end_time": "2018/05/24 00:00:00",
+        "start_time": "2019/05/23 00:00:00",
+        "end_time": "2019/05/24 00:00:00",
         "cap_ratio": "200",
         "max_purchase_limit": "400000000000000000000",
         "min_purchase_limit": "100000000000000",
         "kyc": true
       },
       {
-        "start_time": "2018/05/25 00:00:00",
-        "end_time": "2018/05/27 00:00:00",
+        "start_time": "2019/05/25 00:00:00",
+        "end_time": "2019/05/27 00:00:00",
         "cap_ratio": "0",
         "max_purchase_limit": "0",
         "min_purchase_limit": "0",
@@ -130,11 +130,11 @@
         "is_straight": true,
         "release": [
           {
-            "release_time": "2018/05/28 00:00:00",
+            "release_time": "2019/05/28 00:00:00",
             "release_ratio": "300"
           },
           {
-            "release_time": "2018/05/30 00:00:00",
+            "release_time": "2019/05/30 00:00:00",
             "release_ratio": "1000"
           }
         ]
@@ -145,15 +145,15 @@
         "is_straight": false,
         "release": [
           {
-            "release_time": "2018/05/27 00:00:00",
+            "release_time": "2019/05/27 00:00:00",
             "release_ratio": "200"
           },
           {
-            "release_time": "2018/05/28 00:00:00",
+            "release_time": "2019/05/28 00:00:00",
             "release_ratio": "500"
           },
           {
-            "release_time": "2018/05/30 00:00:00",
+            "release_time": "2019/05/30 00:00:00",
             "release_ratio": "1000"
           }
         ]

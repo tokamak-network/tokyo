@@ -63,9 +63,9 @@ contract BaseCrowdsale is Pausable {
     uint256 weiAmount = msg.value;
 
     uint256 toFund = calculateToFund(beneficiary, weiAmount);
+    require(toFund > 0);
 
     uint256 toReturn = weiAmount.sub(toFund);
-    require(toFund > 0);
 
     buyTokensPreHook(beneficiary, toFund);
 
