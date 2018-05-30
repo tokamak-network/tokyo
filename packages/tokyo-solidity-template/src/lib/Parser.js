@@ -150,8 +150,8 @@ ${ writeTabs(tab2) });
 
       constructors.MiniMeBaseCrowdsale = [["address", "address.token"]];
     } else {
-      token.parentsList.push("Mintable");
-      token.importStatements.push("import \"./base/zeppelin/token/Mintable.sol\";");
+      token.parentsList.push("MintableToken");
+      token.importStatements.push("import \"./base/zeppelin/token/MintableToken.sol\";");
 
       crowdsale.parentsList.push("MintableBaseCrowdsale");
       crowdsale.importStatements.push("import \"./base/crowdsale/MintableBaseCrowdsale.sol\";");
