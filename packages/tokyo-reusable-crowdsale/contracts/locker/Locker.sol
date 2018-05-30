@@ -187,6 +187,7 @@ contract Locker is Ownable {
     onlyBeneficiary(_beneficiary)
   {
     require(!locked[_beneficiary]);
+    require(_releaseRatios.length != 0);
     require(_releaseRatios.length == _releaseTimes.length);
 
     uint i;
