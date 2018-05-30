@@ -29,8 +29,10 @@ export default class Builder {
     const parseResult = this.parser.parse();
 
     return new Promise((done) => {
+      this.writeInput();
       this.writeContracts(parseResult);
       this.writeMigrations(parseResult);
+      // TODO: dynamic test is not supported yet
       // this.writeTest(parseResult);
 
       this.fs.commit([], done);
@@ -86,6 +88,13 @@ export default class Builder {
       this.tmplPath(dirName, "Token.js.ejs"),
       this.targetPath(dirName, "Token.js"),
       this.getDataObj(parseResult),
+    );
+  }
+
+  writeInput() {
+    this.fs.write(
+      this.targetPath("input.json"), // root directory
+      JSON.stringify(this.rawInput, null, 2),
     );
   }
 }
