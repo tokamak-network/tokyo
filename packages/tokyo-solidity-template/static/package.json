@@ -50,6 +50,6 @@
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "rimraf": "^2.6.2",
-    "tokyo-schema": "^1.1.1"
+    "tokyo-schema": "^1.1.3"
   }
 }
