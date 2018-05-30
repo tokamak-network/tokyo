@@ -212,13 +212,8 @@ contract Locker is Ownable {
     releases[_beneficiary].isStraight = _isStraight;
 
     // copy array of uint
-    releases[_beneficiary].releaseTimes = new uint[](len);
-    releases[_beneficiary].releaseRatios = new uint[](len);
-
-    for (i = 0; i < len; i++) {
-      releases[_beneficiary].releaseTimes[i] = _releaseTimes[i];
-      releases[_beneficiary].releaseRatios[i] = _releaseRatios[i];
-    }
+    releases[_beneficiary].releaseTimes = _releaseTimes;
+    releases[_beneficiary].releaseRatios = _releaseRatios;
 
     // lock beneficiary
     locked[_beneficiary] = true;
