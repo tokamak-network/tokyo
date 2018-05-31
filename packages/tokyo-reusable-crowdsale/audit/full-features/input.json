@@ -55,15 +55,19 @@
       "token": [
         {
           "token_holder": "crowdsale",
-          "token_ratio": "800"
+          "token_ratio": "750"
         },
         {
           "token_holder": "locker",
-          "token_ratio": "100"
+          "token_ratio": "150"
         },
         {
           "token_holder": "0x557678cf28594495ef4b08a6447726f931f8d787",
-          "token_ratio": "100"
+          "token_ratio": "50"
+        },
+        {
+          "token_holder": "multisig0",
+          "token_ratio": "50"
         }
       ],
       "ether": [
@@ -73,7 +77,11 @@
         },
         {
           "ether_holder": "0x557678cf28594495ef4b08a6447726f931f8d788",
-          "ether_ratio": "200"
+          "ether_ratio": "100"
+        },
+        {
+          "ether_holder": "multisig1",
+          "ether_ratio": "100"
         }
       ]
     },

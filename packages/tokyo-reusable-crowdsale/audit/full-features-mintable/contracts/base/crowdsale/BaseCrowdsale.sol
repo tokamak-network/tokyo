@@ -1,12 +1,13 @@
 pragma solidity ^0.4.18;
 
 import "../zeppelin/math/SafeMath.sol";
+import "../common/HolderBase.sol";
 import "../vault/MultiHolderVault.sol";
 import "../locker/Locker.sol";
 import "../zeppelin/token/ERC20/ERC20Basic.sol";
 import "../zeppelin/lifecycle/Pausable.sol";
 
-contract BaseCrowdsale is Pausable {
+contract BaseCrowdsale is HolderBase, Pausable {
   using SafeMath for uint256;
 
   Locker public locker;     // token locker
@@ -16,16 +17,14 @@ contract BaseCrowdsale is Pausable {
   uint256 public endTime;
 
   // how many token units a buyer gets per wei
+  // use coeff ratio from HolderBase
   uint256 public rate;
 
-  // base to calculate percentage
-  uint256 public coeff;
 
   // amount of raised money in wei
   uint256 public weiRaised;
 
-  // ratio of tokens for locker and crowdsale
-  uint256 public lockerRatio;
+  // ratio of tokens for crowdsale
   uint256 public crowdsaleRatio;
 
   bool public isFinalized = false;
@@ -50,6 +49,8 @@ contract BaseCrowdsale is Pausable {
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
   event Finalized();
   event ClaimTokens(address indexed _token, uint256 _amount);
+
+  function BaseCrowdsale(uint256 _coeff) HolderBase(_coeff) public {}
 
   // fallback function can be used to buy tokens
   function () external payable {
@@ -190,11 +191,11 @@ contract BaseCrowdsale is Pausable {
   }
 
   function finalizationSuccessHook() internal {
-    uint targetTotalSupply = getTotalSupply().mul(coeff).div(crowdsaleRatio);
+    // calculate target total supply including all token holders
+    uint256 targetTotalSupply = getTotalSupply().mul(coeff).div(crowdsaleRatio);
+    ERC20Basic token = ERC20Basic(getTokenAddress());
 
-    generateHoldersTokens(targetTotalSupply); // for token holders without time lock
-    generateTargetTokens(address(locker), targetTotalSupply, lockerRatio); // tokens for locker
-
+    super.distributeToken(token, targetTotalSupply);
     afterGeneratorHook();
 
     locker.activate();
@@ -212,13 +213,7 @@ contract BaseCrowdsale is Pausable {
   function transferTokenOwnership(address _to) internal;
   function getTotalSupply() internal returns (uint256);
   function finishMinting() internal returns (bool);
-
-  /**
-   * @notice interface to generate tokens for token holders without time lock.
-   * generateTokens called when finalization is success, and should be implemented
-   * by Crowdsale Generator.
-   */
-  function generateHoldersTokens(uint256 _targetTotalSupply) internal;
+  function getTokenAddress() internal returns (address);
 
   /**
    * @notice helper function to generate tokens with ratio
@@ -237,4 +232,15 @@ contract BaseCrowdsale is Pausable {
     _token.transfer(owner, balance);
     emit ClaimTokens(_token, balance);
   }
+
+  /**
+   * @notice Override HolderBase.deliverTokens
+   * @param _token ERC20Basic token contract
+   * @param _beneficiary Address to receive tokens
+   * @param _tokens Amount of tokens
+   */
+  function deliverTokens(ERC20Basic _token, address _beneficiary, uint256 _tokens) internal {
+    generateTokens(_beneficiary, _tokens);
+  }
+
 }

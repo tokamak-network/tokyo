@@ -1,3 +1,5 @@
+const fs = require("fs");
+const path = require("path");
 const moment = require("moment");
 const get = require("lodash/get");
 const ethUtils = require("ethereumjs-util");
@@ -65,6 +67,7 @@ module.exports = async function (deployer, network, accounts) {
 
     address.multisigs = multisigs.map(m => m.address);
     console.log("Multisigs :", address.multisigs.join(", "));
+    fs.writeFileSync(path.resolve(__dirname, "../multisigs.json"), JSON.stringify(address.multisigs));
   }).then(async () => deployer.deploy([
     [
       Locker,
@@ -81,6 +84,7 @@ module.exports = async function (deployer, network, accounts) {
     [
       Crowdsale,
       [
+        get(data, "input.sale.coeff"), // input.sale.coeff
         get(data, "address.token"), // address.token
         new BigNumber("2000000000000000000000"), // input.sale.valid_purchase.max_purchase_limit
         new BigNumber("10000000000000000"), // input.sale.valid_purchase.min_purchase_limit
@@ -105,10 +109,8 @@ module.exports = async function (deployer, network, accounts) {
       new BigNumber(get(data, "input.sale.start_time")),
       new BigNumber(get(data, "input.sale.end_time")),
       new BigNumber(get(data, "input.sale.rate.base_rate")),
-      new BigNumber(get(data, "input.sale.coeff")),
       new BigNumber(get(data, "input.sale.max_cap")),
       new BigNumber(get(data, "input.sale.min_cap")),
-      new BigNumber(lockerRatios),
       new BigNumber(crowdsaleRatio),
       get(data, "address.vault"),
       get(data, "address.locker"),
@@ -117,7 +119,7 @@ module.exports = async function (deployer, network, accounts) {
     
     await crowdsale.init(initArgs.map(toLeftPaddedBuffer));
 
-    const holderAddresses = get(data, "input.sale.distribution.ether").map(({ether_holder}) => {
+    const etherHolderAddresses = get(data, "input.sale.distribution.ether").map(({ether_holder}) => {
       if (isValidAddress(ether_holder)) return ether_holder;
       if (ether_holder.includes("multisig")) {
         const idx = Number(ether_holder.split("multisig")[1]);
@@ -126,11 +128,29 @@ module.exports = async function (deployer, network, accounts) {
         return address.multisigs[idx];
       }
     });
-    const holderRatios = get(data, "input.sale.distribution.ether").map(e => e.ether_ratio);
+    const etherHolderRatios = get(data, "input.sale.distribution.ether").map(e => e.ether_ratio);
     
     await vault.initHolders(
-      holderAddresses,
-      holderRatios,
+      etherHolderAddresses,
+      etherHolderRatios,
+    );
+    
+    const tokenHolderAddresses = get(data, "input.sale.distribution.token").map(({token_holder}) => {
+      if (isValidAddress(token_holder)) return token_holder;
+      if (token_holder === "crowdsale") return "0x00";
+      if (token_holder === "locker") return address.locker;
+      if (token_holder.includes("multisig")) {
+        const idx = Number(token_holder.split("multisig")[1]);
+        if (!isValidAddress(address.multisigs[idx])) throw new Error("Invalid multisig address", address.multisigs[idx]);
+    
+        return address.multisigs[idx];
+      }
+    });
+    const tokenHolderRatios = get(data, "input.sale.distribution.token").map(e => e.token_ratio);
+    
+    await crowdsale.initHolders(
+      tokenHolderAddresses,
+      tokenHolderRatios,
     );
     
     const bonusTimes = [ 1558656000, 1558828800 ];
@@ -197,17 +217,12 @@ module.exports = async function (deployer, network, accounts) {
 };
 
 function getInput() {
-  return JSON.parse('{"project_name":"Audit Full Features Mintable","token":{"token_type":{"is_minime":false},"token_option":{"burnable":true,"pausable":true,"no_mint_after_sale":true},"token_name":"For Audit Mintable","token_symbol":"FAM","decimals":18},"sale":{"max_cap":"4000000000000000000000","min_cap":"1000000000000000000000","start_time":"2019/05/23 00:00:00","end_time":"2019/05/27 00:00:00","coeff":"1000","rate":{"is_static":false,"base_rate":"200","bonus":{"use_time_bonus":true,"use_amount_bonus":true,"time_bonuses":[{"bonus_time_stage":"2019/05/24 00:00:00","bonus_time_ratio":"100"},{"bonus_time_stage":"2019/05/26 00:00:00","bonus_time_ratio":"50"}],"amount_bonuses":[{"bonus_amount_stage":"100000000000000000000","bonus_amount_ratio":"200"},{"bonus_amount_stage":"10000000000000000000","bonus_amount_ratio":"100"},{"bonus_amount_stage":"1000000000000000000","bonus_amount_ratio":"50"}]}},"distribution":{"token":[{"token_holder":"crowdsale","token_ratio":"800"},{"token_holder":"locker","token_ratio":"100"},{"token_holder":"0x557678cf28594495ef4b08a6447726f931f8d787","token_ratio":"100"}],"ether":[{"ether_holder":"0x557678cf28594495ef4b08a6447726f931f8d787","ether_ratio":"800"},{"ether_holder":"0x557678cf28594495ef4b08a6447726f931f8d788","ether_ratio":"200"}]},"stages":[{"start_time":"2019/05/23 00:00:00","end_time":"2019/05/24 00:00:00","cap_ratio":"200","max_purchase_limit":"400000000000000000000","min_purchase_limit":"100000000000000","kyc":true},{"start_time":"2019/05/25 00:00:00","end_time":"2019/05/27 00:00:00","cap_ratio":"0","max_purchase_limit":"0","min_purchase_limit":"0","kyc":true}],"valid_purchase":{"max_purchase_limit":"2000000000000000000000","min_purchase_limit":"10000000000000000","block_interval":20},"new_token_owner":"0xcf7b6f1489129c94a98c79e4be659ea111c76397"},"multisig":{"use_multisig":true,"infos":[{"num_required":1,"owners":["0x557678cf28594495ef4b08a6447726f931f8d787","0x557678cf28594495ef4b08a6447726f931f8d788"]},{"num_required":1,"owners":["0x557678cf28594495ef4b08a6447726f931f8d789","0x557678cf28594495ef4b08a6447726f931f8d78a"]}]},"locker":{"use_locker":true,"beneficiaries":[{"address":"0x557678cf28594495ef4b08a6447726f931f8d787","ratio":"200","is_straight":true,"release":[{"release_time":"2019/05/28 00:00:00","release_ratio":"300"},{"release_time":"2019/05/30 00:00:00","release_ratio":"1000"}]},{"address":"0x557678cf28594495ef4b08a6447726f931f8d788","ratio":"800","is_straight":false,"release":[{"release_time":"2019/05/27 00:00:00","release_ratio":"200"},{"release_time":"2019/05/28 00:00:00","release_ratio":"500"},{"release_time":"2019/05/30 00:00:00","release_ratio":"1000"}]}]}}');
+  return JSON.parse('{"project_name":"Audit Full Features Mintable","token":{"token_type":{"is_minime":false},"token_option":{"burnable":true,"pausable":true,"no_mint_after_sale":true},"token_name":"For Audit Mintable","token_symbol":"FAM","decimals":18},"sale":{"max_cap":"4000000000000000000000","min_cap":"1000000000000000000000","start_time":"2019/05/23 00:00:00","end_time":"2019/05/27 00:00:00","coeff":"1000","rate":{"is_static":false,"base_rate":"200","bonus":{"use_time_bonus":true,"use_amount_bonus":true,"time_bonuses":[{"bonus_time_stage":"2019/05/24 00:00:00","bonus_time_ratio":"100"},{"bonus_time_stage":"2019/05/26 00:00:00","bonus_time_ratio":"50"}],"amount_bonuses":[{"bonus_amount_stage":"100000000000000000000","bonus_amount_ratio":"200"},{"bonus_amount_stage":"10000000000000000000","bonus_amount_ratio":"100"},{"bonus_amount_stage":"1000000000000000000","bonus_amount_ratio":"50"}]}},"distribution":{"token":[{"token_holder":"crowdsale","token_ratio":"800"},{"token_holder":"locker","token_ratio":"100"},{"token_holder":"0x557678cf28594495ef4b08a6447726f931f8d787","token_ratio":"50"},{"token_holder":"multisig0","token_ratio":"50"}],"ether":[{"ether_holder":"0x557678cf28594495ef4b08a6447726f931f8d787","ether_ratio":"800"},{"ether_holder":"0x557678cf28594495ef4b08a6447726f931f8d788","ether_ratio":"100"},{"ether_holder":"multisig1","ether_ratio":"100"}]},"stages":[{"start_time":"2019/05/23 00:00:00","end_time":"2019/05/24 00:00:00","cap_ratio":"200","max_purchase_limit":"400000000000000000000","min_purchase_limit":"100000000000000","kyc":true},{"start_time":"2019/05/25 00:00:00","end_time":"2019/05/27 00:00:00","cap_ratio":"0","max_purchase_limit":"0","min_purchase_limit":"0","kyc":true}],"valid_purchase":{"max_purchase_limit":"2000000000000000000000","min_purchase_limit":"10000000000000000","block_interval":20},"new_token_owner":"0xcf7b6f1489129c94a98c79e4be659ea111c76397"},"multisig":{"use_multisig":true,"infos":[{"num_required":1,"owners":["0x557678cf28594495ef4b08a6447726f931f8d787","0x557678cf28594495ef4b08a6447726f931f8d788"]},{"num_required":1,"owners":["0x557678cf28594495ef4b08a6447726f931f8d789","0x557678cf28594495ef4b08a6447726f931f8d78a"]}]},"locker":{"use_locker":true,"beneficiaries":[{"address":"0x557678cf28594495ef4b08a6447726f931f8d787","ratio":"200","is_straight":true,"release":[{"release_time":"2019/05/28 00:00:00","release_ratio":"300"},{"release_time":"2019/05/30 00:00:00","release_ratio":"1000"}]},{"address":"0x557678cf28594495ef4b08a6447726f931f8d788","ratio":"800","is_straight":false,"release":[{"release_time":"2019/05/27 00:00:00","release_ratio":"200"},{"release_time":"2019/05/28 00:00:00","release_ratio":"500"},{"release_time":"2019/05/30 00:00:00","release_ratio":"1000"}]}]}}');
 }
 
 function toLeftPaddedBuffer(v) {
-  if (typeof v === "boolean") {
-    v = Number(v);
-  } else if (v instanceof BigNumber) {
-    v = addHexPrefix(v.toString(16));
-  }
-
-  const buf = toBuffer(v);
+  const val = addHexPrefix(new BigNumber(v).toString(16));
+  const buf = toBuffer(val);
   const hex = setLengthLeft(buf, 32).toString("hex");
   return addHexPrefix(hex);
 }

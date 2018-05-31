@@ -28,7 +28,7 @@ const Token = artifacts.require("./AuditFullFeaturesMintableToken.sol");
 const Crowdsale = artifacts.require("./AuditFullFeaturesMintableCrowdsale.sol");
 const MintableToken = artifacts.require("./MintableToken.sol");
 
-contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investor2, investor3, ...accounts ]) => {
+contract("AuditFullFeaturesMintableCrowdsale", async ([ owner, other, investor1, investor2, investor3, ...accounts ]) => {
   // contract instances
   let kyc, vault, locker, token, crowdsale, otherToken;
 
@@ -37,6 +37,9 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
 
   // test parameteres
   const input = validate(getInput()).value;
+  const multisigs = getMultisigs();
+  const distributions = {}; // token and ether distribution
+
   const etherAmount = getEtherAmount(input);
   const stageMaxPurchaseLimits = input.sale.stages.map(s => new BigNumber(s.max_purchase_limit));
 
@@ -92,6 +95,7 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
     await advanceBlocks();
   });
 
+  /* eslint-disable complexity */
   it("check parameters", async () => {
     (await crowdsale.owner())
       .should.be.equal(owner);
@@ -105,6 +109,7 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
     (await crowdsale.goal())
       .should.be.bignumber.equal(minCap);
 
+    // check stages
     const numStages = input.sale.stages.length;
     for (let i = 0; i < numStages; i++) {
       /* eslint-disable */
@@ -136,7 +141,81 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
       pEndTime.should.be.bignumber.equal(end_time);
       pKyc.should.be.equal(kyc);
     }
+
+    let i = 0;
+
+    // check crowdsale ratio
+    const crowdsaleRatio = input.sale.distribution.token
+      .filter(t => t.token_holder === "crowdsale")[ 0 ].token_ratio;
+    (await crowdsale.crowdsaleRatio()).should.be.bignumber.equal(crowdsaleRatio);
+
+    // check ether distribution
+    const numEhterHolders = Number(await vault.getHolderCount());
+    const etherHolders = {};
+
+    for (i = 0; i < numEhterHolders; i++) {
+      const [ address, ratio ] = await vault.holders(i);
+      etherHolders[ address ] = ratio;
+    }
+
+    const etherDistributions = input.sale.distribution.ether;
+
+    for (i = 0; i < etherDistributions.length; i++) {
+      const {
+        ether_holder,
+        ether_ratio,
+      } = etherDistributions[ i ];
+
+      let holderAddress;
+
+      if (web3.isAddress(ether_holder)) {
+        holderAddress = ether_holder;
+      } else if (ether_holder.includes("multisig")) {
+        const idx = Number(ether_holder.split("multisig")[ 1 ]);
+        holderAddress = multisigs[ idx ];
+      }
+
+      etherHolders[ holderAddress ].should.be.bignumber.equal(ether_ratio);
+    }
+
+    // check token distribution
+    const numTokenHolders = Number(await crowdsale.getHolderCount());
+    const tokenHolders = {};
+
+    for (i = 0; i < numTokenHolders; i++) {
+      const [ address, ratio ] = await crowdsale.holders(i);
+      tokenHolders[ address ] = ratio;
+    }
+
+    const tokenDistributions = input.sale.distribution.token;
+
+    for (i = 0; i < tokenDistributions.length; i++) {
+      const {
+        token_holder,
+        token_ratio,
+      } = tokenDistributions[ i ];
+
+      let holderAddress;
+
+      if (web3.isAddress(token_holder)) {
+        holderAddress = token_holder;
+      } else if (token_holder.includes("multisig")) {
+        const idx = Number(token_holder.split("multisig")[ 1 ]);
+        holderAddress = multisigs[ idx ];
+      } else if (token_holder === "crowdsale") {
+        continue;
+      } else if (token_holder === "locker") {
+        holderAddress = locker.address;
+      }
+
+      tokenHolders[ holderAddress ].should.be.bignumber.equal(token_ratio);
+    }
+
+    // map address to ratio
+    distributions.ether = etherHolders;
+    distributions.token = tokenHolders;
   });
+  /* eslint-enable complexity */
 
   describe("Before start time", async () => {
     it("reject buying tokens", async () => {
@@ -494,13 +573,11 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
 
       const saleAmounts = await token.totalSupply();
 
-      await crowdsale.finalize()
+      const tx = await crowdsale.finalize()
         .should.be.fulfilled;
 
-      await token.mint(owner, ether(1))
-        .should.be.rejectedWith(EVMThrow);
-
       const totalSupply = await token.totalSupply();
+      const weiRaised = await crowdsale.weiRaised();
 
       const lockerAmounts = await token.balanceOf(locker.address);
 
@@ -508,15 +585,26 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
       saleAmounts.should.be.bignumber.equal(totalSupply.mul(saleRatio).div(coeff));
 
       /* eslint-disable camelcase */
-      for (const { token_holder, token_ratio } of tokenDistributions) {
-        if (![ "crowdsale", "locker" ].includes(token_holder)) {
-          const tokenAmounts = await token.balanceOf(token_holder);
-          tokenAmounts.should.be.bignumber
-            .equal(totalSupply.mul(token_ratio).div(coeff));
-        }
+      for (const address of Object.keys(distributions.ether)) {
+        const ratio = distributions.ether[address];
+        const etherAmount = weiRaised.mul(ratio).div(coeff);
+
+        (await web3.eth.getBalance(address)).should.be.bignumber.equal(etherAmount);
+      }
+
+      for (const address of Object.keys(distributions.token)) {
+        const ratio = distributions.token[address];
+        const tokenAmount = totalSupply.mul(ratio).div(coeff);
+
+        (await token.balanceOf(address)).should.be.bignumber.equal(tokenAmount);
       }
       /* eslint-enable camelcase */
     });
+
+    it("should not allow to mint after sale finalized", async () => {
+      await token.mint(owner, ether(1))
+        .should.be.rejectedWith(EVMThrow);
+    })
   });
 
   describe("claim ERC20 Tokens", async () => {
@@ -537,7 +625,15 @@ contract("AuditFullFeaturesCrowdsale", async ([ owner, other, investor1, investo
 });
 
 function getInput() {
-  return JSON.parse('{"project_name":"Audit Full Features Mintable","token":{"token_type":{"is_minime":false},"token_option":{"burnable":true,"pausable":true,"no_mint_after_sale":true},"token_name":"For Audit Mintable","token_symbol":"FAM","decimals":18},"sale":{"max_cap":"4000000000000000000000","min_cap":"1000000000000000000000","start_time":"2019/05/23 00:00:00","end_time":"2019/05/27 00:00:00","coeff":"1000","rate":{"is_static":false,"base_rate":"200","bonus":{"use_time_bonus":true,"use_amount_bonus":true,"time_bonuses":[{"bonus_time_stage":"2019/05/24 00:00:00","bonus_time_ratio":"100"},{"bonus_time_stage":"2019/05/26 00:00:00","bonus_time_ratio":"50"}],"amount_bonuses":[{"bonus_amount_stage":"100000000000000000000","bonus_amount_ratio":"200"},{"bonus_amount_stage":"10000000000000000000","bonus_amount_ratio":"100"},{"bonus_amount_stage":"1000000000000000000","bonus_amount_ratio":"50"}]}},"distribution":{"token":[{"token_holder":"crowdsale","token_ratio":"800"},{"token_holder":"locker","token_ratio":"100"},{"token_holder":"0x557678cf28594495ef4b08a6447726f931f8d787","token_ratio":"100"}],"ether":[{"ether_holder":"0x557678cf28594495ef4b08a6447726f931f8d787","ether_ratio":"800"},{"ether_holder":"0x557678cf28594495ef4b08a6447726f931f8d788","ether_ratio":"200"}]},"stages":[{"start_time":"2019/05/23 00:00:00","end_time":"2019/05/24 00:00:00","cap_ratio":"200","max_purchase_limit":"400000000000000000000","min_purchase_limit":"100000000000000","kyc":true},{"start_time":"2019/05/25 00:00:00","end_time":"2019/05/27 00:00:00","cap_ratio":"0","max_purchase_limit":"0","min_purchase_limit":"0","kyc":true}],"valid_purchase":{"max_purchase_limit":"2000000000000000000000","min_purchase_limit":"10000000000000000","block_interval":20},"new_token_owner":"0xcf7b6f1489129c94a98c79e4be659ea111c76397"},"multisig":{"use_multisig":true,"infos":[{"num_required":1,"owners":["0x557678cf28594495ef4b08a6447726f931f8d787","0x557678cf28594495ef4b08a6447726f931f8d788"]},{"num_required":1,"owners":["0x557678cf28594495ef4b08a6447726f931f8d789","0x557678cf28594495ef4b08a6447726f931f8d78a"]}]},"locker":{"use_locker":true,"beneficiaries":[{"address":"0x557678cf28594495ef4b08a6447726f931f8d787","ratio":"200","is_straight":true,"release":[{"release_time":"2019/05/28 00:00:00","release_ratio":"300"},{"release_time":"2019/05/30 00:00:00","release_ratio":"1000"}]},{"address":"0x557678cf28594495ef4b08a6447726f931f8d788","ratio":"800","is_straight":false,"release":[{"release_time":"2019/05/27 00:00:00","release_ratio":"200"},{"release_time":"2019/05/28 00:00:00","release_ratio":"500"},{"release_time":"2019/05/30 00:00:00","release_ratio":"1000"}]}]}}');
+  /* eslint-disable */
+  return require('../input.json');
+  /* eslint-ensable */
+}
+
+function getMultisigs() {
+  /* eslint-disable */
+  return require('../multisigs.json');
+  /* eslint-ensable */
 }
 
 /* eslint-disable complexity,camelcase */

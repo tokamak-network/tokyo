@@ -29,4 +29,8 @@ contract MintableBaseCrowdsale is BaseCrowdsale {
     require(token.finishMinting());
     return true;
   }
+
+  function getTokenAddress() internal returns (address) {
+    return address(token);
+  }
 }
