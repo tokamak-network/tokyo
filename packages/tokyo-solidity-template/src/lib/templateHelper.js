@@ -89,27 +89,27 @@ export function writeLockerArguments(input, numTap = 3) {
   const ratios = [];
 
   const {
-    sale: { coeff },
     locker: { beneficiaries },
   } = input;
 
   ret.push("get(data, \"address.token\")");
 
-  ret.push(wrapNewBigNumber(convertBigNumber(coeff)));
+  ret.push("get(data, \"input.sale.coeff\")");
 
-  beneficiaries.forEach(({ address }) => {
-    addrs.push((convertAddress(address)));
-  });
+  for (let i = 0; i < beneficiaries.length; i++) {
+    addrs.push(`get(data, "input.locker.beneficiaries.${ i }.address")`);
+    ratios.push(`get(data, "input.locker.beneficiaries.${ i }.ratio")`);
+  }
 
-  ret.push(`[${ addrs.join(", ") }]`);
+  ret.push(`[
+${ writeTabs(numTap) }${ addrs.join(`,\n${ writeTabs(numTap) }`) }
+${ writeTabs(numTap - 1) }]`);
 
-  beneficiaries.forEach(({ ratio }) => {
-    ratios.push(wrapNewBigNumber(convertBigNumber(ratio)));
-  });
+  ret.push(`[
+${ writeTabs(numTap) }${ ratios.join(`,\n${ writeTabs(numTap) }`) }
+${ writeTabs(numTap - 1) }]`);
 
-  ret.push(`[${ ratios.join(", ") }]`);
-
-  return ret.join(`,\n${ writeTabs(numTap) }`);
+  return ret.join(`,\n${ writeTabs(numTap - 1) }`);
 }
 
 /**
@@ -127,7 +127,7 @@ export function writeConstructorArguments(parseResult, numTap = 2) {
     const args = constructors[ parentName ];
 
     for (const [type, path, value = null] of args) {
-      ret.push(`${ convertArgument(type, path, value) }, // ${ path }`);
+      ret.push(`get(data, "${ path }"),`);
     }
   });
 
@@ -152,7 +152,7 @@ export function writeTokenArguments(input, numTap = 2) {
   }
 
   const ret = [
-    "\"0x00\"", // token factory
+    "\"0x0000000000000000000000000000000000000000\"", // token factory
   ];
 
   return `${ ret.join(`,\n${ writeTabs(numTap) }`) }`;

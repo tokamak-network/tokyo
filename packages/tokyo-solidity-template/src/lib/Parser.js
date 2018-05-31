@@ -1,14 +1,11 @@
-import {
-  writeTabs,
-  convertAddress,
-} from "./templateHelper";
+import range from "lodash/range";
+
+import { writeTabs } from "./templateHelper";
 
 // common constructor parameters for MintableBaseCrowdsale & MiniMeBaseCrowdsale
 // [ [solidity data type], [path for lodash.get] ]
-const arrayConvertor = array => (key, convertor) =>
-  array.map(s => (convertor ? convertor(s[ key ]) : s[ key ]));
 
-const BNConvertor = bn => bn.toFixed(0);
+const makeArrayPath = (len, prefix, postfix = "") => range(len).map(i => `get(data, "${ prefix }.${ i }${ postfix ? `.${ postfix }` : "" }")`);
 
 /**
  * @title Parser
@@ -195,30 +192,43 @@ ${ writeTabs(tab2) });
 
       constructors.BonusCrowdsale = [];
 
-      const timeConvertor = arrayConvertor(input.sale.rate.bonus.time_bonuses);
-      const amountConvertor = arrayConvertor(input.sale.rate.bonus.amount_bonuses);
+      const numTimeBonuses = input.sale.rate.bonus.use_time_bonus ?
+        input.sale.rate.bonus.time_bonuses.length : 0;
+
+      const bonusTimeStages = makeArrayPath(numTimeBonuses, "input.sale.rate.bonus.time_bonuses", "bonus_time_stage");
+      const bonusTimeRatios = makeArrayPath(numTimeBonuses, "input.sale.rate.bonus.time_bonuses", "bonus_time_ratio");
+
+      const numAmountBonuses = input.sale.rate.bonus.use_amount_bonus ?
+        input.sale.rate.bonus.amount_bonuses.length : 0;
+
+      const bonusAmountStages = makeArrayPath(numAmountBonuses, "input.sale.rate.bonus.amount_bonuses", "bonus_amount_stage");
+      const bonusAmountRatios = makeArrayPath(numAmountBonuses, "input.sale.rate.bonus.amount_bonuses", "bonus_amount_ratio");
 
       codes.migration += `
-${ writeTabs(tab2) }const bonusTimes = [ ${ timeConvertor("bonus_time_stage").join(", ") } ];
-${ writeTabs(tab2) }const bonusTimeValues = [ ${ timeConvertor("bonus_time_ratio").join(", ") } ];
+${ writeTabs(tab2) }const bonusTimeStages = [
+${ writeTabs(tab3) }${ bonusTimeStages.join(`,\n${ writeTabs(tab3) }`) } ];
+${ writeTabs(tab2) }const bonusTimeRatios = [
+${ writeTabs(tab3) }${ bonusTimeRatios.join(`,\n${ writeTabs(tab3) }`) } ];
       `;
 
       codes.migration += `
-${ writeTabs(tab2) }const bonusAmounts = [ ${ amountConvertor("bonus_amount_stage", BNConvertor).join(", ") } ];
-${ writeTabs(tab2) }const bonusAmountValues = [ ${ amountConvertor("bonus_amount_ratio").join(", ") } ];
+${ writeTabs(tab2) }const bonusAmountStages = [
+${ writeTabs(tab3) }${ bonusAmountStages.join(`,\n${ writeTabs(tab3) }`) } ];
+${ writeTabs(tab2) }const bonusAmountRatios = [
+${ writeTabs(tab3) }${ bonusAmountRatios.join(`,\n${ writeTabs(tab3) }`) } ];
 `;
 
       codes.migration += `
 ${ writeTabs(tab2) }await crowdsale.setBonusesForTimes(
-${ writeTabs(tab3) }bonusTimes,
-${ writeTabs(tab3) }bonusTimeValues,
+${ writeTabs(tab3) }bonusTimeStages,
+${ writeTabs(tab3) }bonusTimeRatios,
 ${ writeTabs(tab2) });
 `;
 
       codes.migration += `
 ${ writeTabs(tab2) }await crowdsale.setBonusesForAmounts(
-${ writeTabs(tab3) }bonusAmounts,
-${ writeTabs(tab3) }bonusAmountValues,
+${ writeTabs(tab3) }bonusAmountStages,
+${ writeTabs(tab3) }bonusAmountRatios,
 ${ writeTabs(tab2) });
 `;
     }
@@ -259,18 +269,31 @@ ${ writeTabs(tab2) });
       crowdsale.parentsList.push("StagedCrowdsale");
       crowdsale.importStatements.push("import \"./base/crowdsale/StagedCrowdsale.sol\";");
 
-      constructors.StagedCrowdsale = [["uint", "input.sale.stages_length", input.sale.stages.length]]; // *_length => *.length
+      constructors.StagedCrowdsale = [["uint", "input.sale.stages.length", input.sale.stages.length]]; // *_length => *.length
 
       // StagedCrowdsale.initStages
-      const periodConvertor = arrayConvertor(input.sale.stages);
+      const numStages = input.sale.stages.length;
+
+      const periodStartTimes = makeArrayPath(numStages, "input.sale.stages", "start_time");
+      const periodEndTimes = makeArrayPath(numStages, "input.sale.stages", "end_time");
+      const periodCapRatios = makeArrayPath(numStages, "input.sale.stages", "cap_ratio");
+      const periodMaxPurchaseLimits = makeArrayPath(numStages, "input.sale.stages", "max_purchase_limit");
+      const periodMinPurchaseLimits = makeArrayPath(numStages, "input.sale.stages", "min_purchase_limit");
+      const periodKycs = makeArrayPath(numStages, "input.sale.stages", "kyc");
 
       codes.migration += `
-${ writeTabs(tab2) }const periodStartTimes = [ ${ periodConvertor("start_time").join(", ") } ];
-${ writeTabs(tab2) }const periodEndTimes = [ ${ periodConvertor("end_time").join(", ") } ];
-${ writeTabs(tab2) }const periodCapRatios = [ ${ periodConvertor("cap_ratio").join(", ") } ];
-${ writeTabs(tab2) }const periodMaxPurchaseLimits = [ ${ periodConvertor("max_purchase_limit").join(", ") } ];
-${ writeTabs(tab2) }const periodMinPurchaseLimits = [ ${ periodConvertor("min_purchase_limit").join(", ") } ];
-${ writeTabs(tab2) }const periodKycs = [ ${ periodConvertor("kyc").join(", ") } ];
+${ writeTabs(tab2) }const periodStartTimes = [
+${ writeTabs(tab3) }${ periodStartTimes.join(`,\n${ writeTabs(tab3) }`) } ];
+${ writeTabs(tab2) }const periodEndTimes = [
+${ writeTabs(tab3) }${ periodEndTimes.join(`,\n${ writeTabs(tab3) }`) } ];
+${ writeTabs(tab2) }const periodCapRatios = [
+${ writeTabs(tab3) }${ periodCapRatios.join(`,\n${ writeTabs(tab3) }`) } ];
+${ writeTabs(tab2) }const periodMaxPurchaseLimits = [
+${ writeTabs(tab3) }${ periodMaxPurchaseLimits.join(`,\n${ writeTabs(tab3) }`) } ];
+${ writeTabs(tab2) }const periodMinPurchaseLimits = [
+${ writeTabs(tab3) }${ periodMinPurchaseLimits.join(`,\n${ writeTabs(tab3) }`) } ];
+${ writeTabs(tab2) }const periodKycs = [
+${ writeTabs(tab3) }${ periodKycs.join(`,\n${ writeTabs(tab3) }`) } ];
 `;
 
       codes.migration += `
@@ -286,25 +309,29 @@ ${ writeTabs(tab2) });
     }
 
     // Locker.lock()
-    let i = 0;
-    for (const { address, is_straight, release } of input.locker.beneficiaries) {
-      i += 1;
+    let i = 0; // beneficiary index
+    for (const beneficiary of input.locker.beneficiaries) {
+      const numReleases = beneficiary.release.length;
 
-      const releaseConvertor = arrayConvertor(release);
+      const releaseTimes = makeArrayPath(numReleases, `input.locker.beneficiaries.${ i }.release`, "release_time");
+      const releaseRatios = makeArrayPath(numReleases, `input.locker.beneficiaries.${ i }.release`, "release_ratio");
 
       codes.migration += `
-${ writeTabs(tab2) }const release${ i }Times = [ ${ releaseConvertor("release_time").join(", ") } ];
-${ writeTabs(tab2) }const release${ i }Ratios = [ ${ releaseConvertor("release_ratio").join(", ") } ];
+${ writeTabs(tab2) }const release${ i }Times = [
+${ writeTabs(tab3) }${ releaseTimes.join(`,\n${ writeTabs(tab3) }`) } ];
+${ writeTabs(tab2) }const release${ i }Ratios = [
+${ writeTabs(tab3) }${ releaseRatios.join(`,\n${ writeTabs(tab3) }`) } ];
 `;
 
       codes.migration += `
 ${ writeTabs(tab2) }await locker.lock(
-${ writeTabs(tab3) }${ convertAddress(address) },
-${ writeTabs(tab3) }${ is_straight },
+${ writeTabs(tab3) }get(data, "input.locker.beneficiaries.${ i }.address"),
+${ writeTabs(tab3) }get(data, "input.locker.beneficiaries.${ i }.is_straight"),
 ${ writeTabs(tab3) }release${ i }Times,
 ${ writeTabs(tab3) }release${ i }Ratios,
 ${ writeTabs(tab2) });
-    `;
+`;
+      i += 1;
     }
 
     // BaseCrowdsale.init()
@@ -338,7 +365,7 @@ ${ writeTabs(tab2) }goal = _goal;
 ${ writeTabs(tab2) }crowdsaleRatio = _crowdsaleRatio;
 ${ writeTabs(tab2) }vault = MultiHolderVault(_vault);
 ${ writeTabs(tab2) }locker = Locker(_locker);
-${ writeTabs(tab2) }nextTokenOwner = _nextTokenOwner;
+${ writeTabs(tab2) }nextTokenOwner = _nextTokenOwner; 
 `;
 
     // append post contract declaration

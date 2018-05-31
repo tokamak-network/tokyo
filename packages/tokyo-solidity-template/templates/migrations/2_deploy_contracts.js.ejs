@@ -43,8 +43,8 @@ module.exports = async function (deployer, network, accounts) {
     KYC,
     [
       Vault,
-      "<%- input.sale.new_token_owner -%>",
-      <%- input.sale.coeff %>
+      get(data, "input.sale.new_token_owner"),
+      get(data, "input.sale.coeff"),
     ],
     [
       Token,
