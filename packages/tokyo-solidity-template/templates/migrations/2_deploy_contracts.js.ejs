@@ -1,3 +1,5 @@
+const fs = require("fs");
+const path = require("path");
 const moment = require("moment");
 const get = require("lodash/get");
 const ethUtils = require("ethereumjs-util");
@@ -64,6 +66,7 @@ module.exports = async function (deployer, network, accounts) {
 
     address.multisigs = multisigs.map(m => m.address);
     console.log("Multisigs :", address.multisigs.join(", "));
+    fs.writeFileSync(path.resolve(__dirname, "../multisigs.json"), JSON.stringify(address.multisigs));
   }).then(async () => deployer.deploy([
     [
       Locker,
@@ -103,13 +106,8 @@ function getInput() {
 }
 
 function toLeftPaddedBuffer(v) {
-  if (typeof v === "boolean") {
-    v = Number(v);
-  } else if (v instanceof BigNumber) {
-    v = addHexPrefix(v.toString(16));
-  }
-
-  const buf = toBuffer(v);
+  const val = addHexPrefix(new BigNumber(v).toString(16));
+  const buf = toBuffer(val);
   const hex = setLengthLeft(buf, 32).toString("hex");
   return addHexPrefix(hex);
 }

@@ -26,10 +26,6 @@ contract <%- helper.getCrowdsaleName(parseResult) -%> is <%- parentsList.join(",
     return address(b & 0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff);
   }
 
-  function generateHoldersTokens(uint256 _targetTotalSupply) internal {
-<%- parseResult.codes.crowdsale.generateHoldersTokens -%>
-  }
-
   function init(bytes32[] args) public {
 <%- parseResult.codes.crowdsale.init -%>
   }

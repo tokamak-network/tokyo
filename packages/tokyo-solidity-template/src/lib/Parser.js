@@ -41,7 +41,6 @@ export default class Parser {
       migration: "",
       crowdsale: {
         init: "",
-        generateHoldersTokens: "",
       },
     };
     const constructors = {}; // for constructors for Crowdsale, Locker
@@ -66,10 +65,8 @@ ${ writeTabs(tab3) }.filter(t => t.token_holder === "crowdsale")[0].token_ratio;
       "new BigNumber(get(data, \"input.sale.start_time\"))",
       "new BigNumber(get(data, \"input.sale.end_time\"))",
       "new BigNumber(get(data, \"input.sale.rate.base_rate\"))",
-      "new BigNumber(get(data, \"input.sale.coeff\"))",
       "new BigNumber(get(data, \"input.sale.max_cap\"))",
       "new BigNumber(get(data, \"input.sale.min_cap\"))",
-      "new BigNumber(lockerRatios)",
       "new BigNumber(crowdsaleRatio)",
       "get(data, \"address.vault\")",
       "get(data, \"address.locker\")",
@@ -86,11 +83,12 @@ ${ writeTabs(tab2) }await crowdsale.init(initArgs.map(toLeftPaddedBuffer));
     // BaseCrowdsale
     crowdsale.parentsList.push("BaseCrowdsale");
     crowdsale.importStatements.push("import \"./base/crowdsale/BaseCrowdsale.sol\";");
-    constructors.BaseCrowdsale = [];
+    constructors.BaseCrowdsale = [["uint", "input.sale.coeff"]];
 
-    // HolderBase.initHolders
+    // input.sale.distribution.ether
+    // vault.initHolders
     codes.migration += `
-${ writeTabs(tab2) }const holderAddresses = get(data, "input.sale.distribution.ether").map(({ether_holder}) => {
+${ writeTabs(tab2) }const etherHolderAddresses = get(data, "input.sale.distribution.ether").map(({ether_holder}) => {
 ${ writeTabs(tab2) }  if (isValidAddress(ether_holder)) return ether_holder;
 ${ writeTabs(tab2) }  if (ether_holder.includes("multisig")) {
 ${ writeTabs(tab2) }    const idx = Number(ether_holder.split("multisig")[1]);
@@ -99,27 +97,39 @@ ${ writeTabs(tab2) }
 ${ writeTabs(tab2) }    return address.multisigs[idx];
 ${ writeTabs(tab2) }  }
 ${ writeTabs(tab2) }});
-${ writeTabs(tab2) }const holderRatios = get(data, "input.sale.distribution.ether").map(e => e.ether_ratio);
+${ writeTabs(tab2) }const etherHolderRatios = get(data, "input.sale.distribution.ether").map(e => e.ether_ratio);
     `;
 
     codes.migration += `
 ${ writeTabs(tab2) }await vault.initHolders(
-${ writeTabs(tab3) }holderAddresses,
-${ writeTabs(tab3) }holderRatios,
+${ writeTabs(tab3) }etherHolderAddresses,
+${ writeTabs(tab3) }etherHolderRatios,
 ${ writeTabs(tab2) });
     `;
 
-    // input.sale.distribution.tokens
-    for (const { token_holder, token_ratio } of input.sale.distribution.token) {
-      if (["crowdsale", "locker"].includes(token_holder)) {
-        // eslint-disable-next-line no-continue
-        continue; // both are included in BaseCrowdsale constructor
-      }
+    // input.sale.distribution.token
+    // crowdsale.initHolders
+    codes.migration += `
+${ writeTabs(tab2) }const tokenHolderAddresses = get(data, "input.sale.distribution.token").map(({token_holder}) => {
+${ writeTabs(tab2) }  if (isValidAddress(token_holder)) return token_holder;
+${ writeTabs(tab2) }  if (token_holder === "crowdsale") return "0x00";
+${ writeTabs(tab2) }  if (token_holder === "locker") return address.locker;
+${ writeTabs(tab2) }  if (token_holder.includes("multisig")) {
+${ writeTabs(tab2) }    const idx = Number(token_holder.split("multisig")[1]);
+${ writeTabs(tab2) }    if (!isValidAddress(address.multisigs[idx])) throw new Error("Invalid multisig address", address.multisigs[idx]);
+${ writeTabs(tab2) }
+${ writeTabs(tab2) }    return address.multisigs[idx];
+${ writeTabs(tab2) }  }
+${ writeTabs(tab2) }});
+${ writeTabs(tab2) }const tokenHolderRatios = get(data, "input.sale.distribution.token").map(e => e.token_ratio);
+    `;
 
-      codes.crowdsale.generateHoldersTokens += `
-  ${ writeTabs(tab2) }generateTargetTokens(${ token_holder }, _targetTotalSupply, ${ token_ratio });
-`;
-    }
+    codes.migration += `
+${ writeTabs(tab2) }await crowdsale.initHolders(
+${ writeTabs(tab3) }tokenHolderAddresses,
+${ writeTabs(tab3) }tokenHolderRatios,
+${ writeTabs(tab2) });
+    `;
 
     // parse input.token
     if (input.token.token_type.is_minime) {
@@ -298,7 +308,7 @@ ${ writeTabs(tab2) });
     }
 
     // BaseCrowdsale.init()
-    const intVars = ["_startTime", "_endTime", "_rate", "_coeff", "_cap", "_goal", "_lockerRatio", "_crowdsaleRatio"];
+    const intVars = ["_startTime", "_endTime", "_rate", "_cap", "_goal", "_crowdsaleRatio"];
     const addrVars = ["_vault", "_locker", "_nextTokenOwner"];
 
     i = 0;
@@ -311,13 +321,10 @@ ${ writeTabs(tab2) });
     }
 
     codes.crowdsale.init += `
-${ writeTabs(tab2) }require(_startTime >= now);
 ${ writeTabs(tab2) }require(_endTime >= _startTime);
 ${ writeTabs(tab2) }require(_rate > 0);
-${ writeTabs(tab2) }require(_coeff > 0);
 ${ writeTabs(tab2) }require(_cap > 0);
 ${ writeTabs(tab2) }require(_goal > 0);
-${ writeTabs(tab2) }require(_lockerRatio > 0);
 ${ writeTabs(tab2) }require(_crowdsaleRatio > 0);
 ${ writeTabs(tab2) }require(_vault != address(0));
 ${ writeTabs(tab2) }require(_locker != address(0));
@@ -326,10 +333,8 @@ ${ writeTabs(tab2) }
 ${ writeTabs(tab2) }startTime = _startTime;
 ${ writeTabs(tab2) }endTime = _endTime;
 ${ writeTabs(tab2) }rate = _rate;
-${ writeTabs(tab2) }coeff = _coeff;
 ${ writeTabs(tab2) }cap = _cap;
 ${ writeTabs(tab2) }goal = _goal;
-${ writeTabs(tab2) }lockerRatio = _lockerRatio;
 ${ writeTabs(tab2) }crowdsaleRatio = _crowdsaleRatio;
 ${ writeTabs(tab2) }vault = MultiHolderVault(_vault);
 ${ writeTabs(tab2) }locker = Locker(_locker);

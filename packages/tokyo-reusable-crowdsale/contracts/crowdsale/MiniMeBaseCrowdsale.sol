@@ -30,4 +30,8 @@ contract MiniMeBaseCrowdsale is BaseCrowdsale {
     require(NoMintMiniMeToken(token).finishMinting());
     return true;
   }
+
+  function getTokenAddress() internal returns (address) {
+    return address(token);
+  }
 }
