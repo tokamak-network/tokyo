@@ -43,13 +43,13 @@ module.exports = async function (deployer, network, accounts) {
     KYC,
     [
       Vault,
-      "0xcf7b6f1489129c94a98c79e4be659ea111c76397",
-      1000
+      get(data, "input.sale.new_token_owner"),
+      get(data, "input.sale.coeff"),
     ],
     [
       Token,
       // token arguments...
-      "0x00"
+      "0x0000000000000000000000000000000000000000"
     ]
   ]).then(async () => {
     kyc = await KYC.deployed();
@@ -72,9 +72,15 @@ module.exports = async function (deployer, network, accounts) {
     [
       Locker,
       get(data, "address.token"),
-        new BigNumber("1000"),
-        ["0x557678cf28594495ef4b08a6447726f931f8d787", "0x557678cf28594495ef4b08a6447726f931f8d788"],
-        [new BigNumber("200"), new BigNumber("800")]
+      get(data, "input.sale.coeff"),
+      [
+        get(data, "input.locker.beneficiaries.0.address"),
+        get(data, "input.locker.beneficiaries.1.address")
+      ],
+      [
+        get(data, "input.locker.beneficiaries.0.ratio"),
+        get(data, "input.locker.beneficiaries.1.ratio")
+      ]
     ],
   ])).then(async () => {
     locker = await Locker.deployed();
@@ -84,13 +90,13 @@ module.exports = async function (deployer, network, accounts) {
     [
       Crowdsale,
       [
-        get(data, "input.sale.coeff"), // input.sale.coeff
-        get(data, "address.token"), // address.token
-        new BigNumber("2000000000000000000000"), // input.sale.valid_purchase.max_purchase_limit
-        new BigNumber("10000000000000000"), // input.sale.valid_purchase.min_purchase_limit
-        new BigNumber("20"), // input.sale.valid_purchase.block_interval
-        get(data, "address.kyc"), // address.kyc
-        new BigNumber("2"), // input.sale.stages_length
+        get(data, "input.sale.coeff"),
+        get(data, "address.token"),
+        get(data, "input.sale.valid_purchase.max_purchase_limit"),
+        get(data, "input.sale.valid_purchase.min_purchase_limit"),
+        get(data, "input.sale.valid_purchase.block_interval"),
+        get(data, "address.kyc"),
+        get(data, "input.sale.stages.length"),
       ].map(toLeftPaddedBuffer)
     ]
   ])).then(async () => {
@@ -153,28 +159,50 @@ module.exports = async function (deployer, network, accounts) {
       tokenHolderRatios,
     );
     
-    const bonusTimes = [ 1558656000, 1558828800 ];
-    const bonusTimeValues = [ 100, 50 ];
+    const bonusTimeStages = [
+      get(data, "input.sale.rate.bonus.time_bonuses.0.bonus_time_stage"),
+      get(data, "input.sale.rate.bonus.time_bonuses.1.bonus_time_stage") ];
+    const bonusTimeRatios = [
+      get(data, "input.sale.rate.bonus.time_bonuses.0.bonus_time_ratio"),
+      get(data, "input.sale.rate.bonus.time_bonuses.1.bonus_time_ratio") ];
       
-    const bonusAmounts = [ 100000000000000000000, 10000000000000000000, 1000000000000000000 ];
-    const bonusAmountValues = [ 200, 100, 50 ];
+    const bonusAmountStages = [
+      get(data, "input.sale.rate.bonus.amount_bonuses.0.bonus_amount_stage"),
+      get(data, "input.sale.rate.bonus.amount_bonuses.1.bonus_amount_stage"),
+      get(data, "input.sale.rate.bonus.amount_bonuses.2.bonus_amount_stage") ];
+    const bonusAmountRatios = [
+      get(data, "input.sale.rate.bonus.amount_bonuses.0.bonus_amount_ratio"),
+      get(data, "input.sale.rate.bonus.amount_bonuses.1.bonus_amount_ratio"),
+      get(data, "input.sale.rate.bonus.amount_bonuses.2.bonus_amount_ratio") ];
 
     await crowdsale.setBonusesForTimes(
-      bonusTimes,
-      bonusTimeValues,
+      bonusTimeStages,
+      bonusTimeRatios,
     );
 
     await crowdsale.setBonusesForAmounts(
-      bonusAmounts,
-      bonusAmountValues,
+      bonusAmountStages,
+      bonusAmountRatios,
     );
 
-    const periodStartTimes = [ 1558569600, 1558742400 ];
-    const periodEndTimes = [ 1558656000, 1558915200 ];
-    const periodCapRatios = [ 200, 0 ];
-    const periodMaxPurchaseLimits = [ 400000000000000000000, 0 ];
-    const periodMinPurchaseLimits = [ 100000000000000, 0 ];
-    const periodKycs = [ true, true ];
+    const periodStartTimes = [
+      get(data, "input.sale.stages.0.start_time"),
+      get(data, "input.sale.stages.1.start_time") ];
+    const periodEndTimes = [
+      get(data, "input.sale.stages.0.end_time"),
+      get(data, "input.sale.stages.1.end_time") ];
+    const periodCapRatios = [
+      get(data, "input.sale.stages.0.cap_ratio"),
+      get(data, "input.sale.stages.1.cap_ratio") ];
+    const periodMaxPurchaseLimits = [
+      get(data, "input.sale.stages.0.max_purchase_limit"),
+      get(data, "input.sale.stages.1.max_purchase_limit") ];
+    const periodMinPurchaseLimits = [
+      get(data, "input.sale.stages.0.min_purchase_limit"),
+      get(data, "input.sale.stages.1.min_purchase_limit") ];
+    const periodKycs = [
+      get(data, "input.sale.stages.0.kyc"),
+      get(data, "input.sale.stages.1.kyc") ];
 
     await crowdsale.initStages(
       periodStartTimes,
@@ -185,26 +213,36 @@ module.exports = async function (deployer, network, accounts) {
       periodKycs,
     );
 
-    const release1Times = [ 1559001600, 1559174400 ];
-    const release1Ratios = [ 300, 1000 ];
+    const release0Times = [
+      get(data, "input.locker.beneficiaries.0.release.0.release_time"),
+      get(data, "input.locker.beneficiaries.0.release.1.release_time") ];
+    const release0Ratios = [
+      get(data, "input.locker.beneficiaries.0.release.0.release_ratio"),
+      get(data, "input.locker.beneficiaries.0.release.1.release_ratio") ];
 
     await locker.lock(
-      "0x557678cf28594495ef4b08a6447726f931f8d787",
-      true,
+      get(data, "input.locker.beneficiaries.0.address"),
+      get(data, "input.locker.beneficiaries.0.is_straight"),
+      release0Times,
+      release0Ratios,
+    );
+
+    const release1Times = [
+      get(data, "input.locker.beneficiaries.1.release.0.release_time"),
+      get(data, "input.locker.beneficiaries.1.release.1.release_time"),
+      get(data, "input.locker.beneficiaries.1.release.2.release_time") ];
+    const release1Ratios = [
+      get(data, "input.locker.beneficiaries.1.release.0.release_ratio"),
+      get(data, "input.locker.beneficiaries.1.release.1.release_ratio"),
+      get(data, "input.locker.beneficiaries.1.release.2.release_ratio") ];
+
+    await locker.lock(
+      get(data, "input.locker.beneficiaries.1.address"),
+      get(data, "input.locker.beneficiaries.1.is_straight"),
       release1Times,
       release1Ratios,
     );
-    
-    const release2Times = [ 1558915200, 1559001600, 1559174400 ];
-    const release2Ratios = [ 200, 500, 1000 ];
 
-    await locker.lock(
-      "0x557678cf28594495ef4b08a6447726f931f8d788",
-      false,
-      release2Times,
-      release2Ratios,
-    );
-    
   }).then(async () => {
     // transfer ownerships to crowdsale
     await Promise.all([
