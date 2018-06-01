@@ -96,9 +96,9 @@ contract Locker is Ownable {
   uint public initialBalance;
   uint public withdrawAmount; // total amount of tokens released
 
-  mapping (address => Beneficiary) beneficiaries;
-  mapping (address => Release) releases;  // beneficiary's lock
-  mapping (address => bool) locked; // whether beneficiary's lock is instantiated
+  mapping (address => Beneficiary) public beneficiaries;
+  mapping (address => Release) public releases;  // beneficiary's lock
+  mapping (address => bool) public locked; // whether beneficiary's lock is instantiated
 
   uint public numBeneficiaries;
   uint public numLocks;
