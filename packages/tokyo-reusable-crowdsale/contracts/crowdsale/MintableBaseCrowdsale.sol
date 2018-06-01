@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "./BaseCrowdsale.sol";
-import "../zeppelin/token/MintableToken.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
 
 contract MintableBaseCrowdsale is BaseCrowdsale {
 

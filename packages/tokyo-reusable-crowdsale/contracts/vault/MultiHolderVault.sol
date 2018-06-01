@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
-import "../zeppelin/math/SafeMath.sol";
-import "../zeppelin/crowdsale/RefundVault.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/crowdsale/distribution/utils/RefundVault.sol";
 import "../common/HolderBase.sol";
 
 /**

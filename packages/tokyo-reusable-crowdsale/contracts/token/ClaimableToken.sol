@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
-import "../zeppelin/token/StandardToken.sol";
-import "../zeppelin/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 contract ClaimableToken is StandardToken, Ownable {
   event ClaimedTokens(address indexed _token, address indexed _owner, uint _amount);

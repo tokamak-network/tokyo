@@ -30,6 +30,7 @@ export default class Builder {
 
     return new Promise((done) => {
       this.writeInput();
+      this.writeStatic(parseResult);
       this.writeContracts(parseResult);
       this.writeMigrations(parseResult);
       // TODO: dynamic test is not supported yet
@@ -43,6 +44,15 @@ export default class Builder {
     return {
       input: this.input, rawInput: this.rawInput, helper: templateHelper, parseResult,
     };
+  }
+
+  writeStatic(parseResult) {
+    // package.json
+    this.fs.copyTpl(
+      this.tmplPath("package.json.ejs"),
+      this.targetPath("package.json"),
+      this.getDataObj(parseResult),
+    );
   }
 
   writeContracts(parseResult) {

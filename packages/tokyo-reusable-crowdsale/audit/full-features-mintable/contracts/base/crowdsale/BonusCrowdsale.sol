@@ -3,7 +3,7 @@
 pragma solidity ^0.4.24;
 
 import "./BaseCrowdsale.sol";
-import "../zeppelin/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
 

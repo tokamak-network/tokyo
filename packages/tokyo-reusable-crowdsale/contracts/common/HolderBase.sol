@@ -1,8 +1,8 @@
 pragma solidity ^0.4.24;
 
-import "../zeppelin/math/SafeMath.sol";
-import "../zeppelin/ownership/Ownable.sol";
-import "../zeppelin/token/ERC20/ERC20Basic.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol";
 
 /**
  * @title HolderBase

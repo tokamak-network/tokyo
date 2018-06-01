@@ -3,10 +3,10 @@
   "workspaces": [
     "packages/*",
     "packages/tokyo-solidity-template/test_*",
-    "packages/tokyo-reusable-crowdsale/audit*"
+    "packages/tokyo-reusable-crowdsale/audit/*"
   ],
   "scripts": {
-    "clean": "rm -rf ./node_modules && rm -rf packages/*/node_modules",
+    "clean": "rm -rf ./node_modules && rm -rf packages/*/node_modules && rm -rf packages/tokyo-reusable-crowdsale/audit/*/node_modules",
     "bootstrap": "lerna bootstrap",
     "test": "lerna run test",
     "prepare": "lerna run prepare"

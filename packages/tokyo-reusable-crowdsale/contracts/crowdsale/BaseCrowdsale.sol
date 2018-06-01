@@ -1,11 +1,12 @@
 pragma solidity ^0.4.24;
 
-import "../zeppelin/math/SafeMath.sol";
 import "../common/HolderBase.sol";
 import "../vault/MultiHolderVault.sol";
 import "../locker/Locker.sol";
-import "../zeppelin/token/ERC20/ERC20Basic.sol";
-import "../zeppelin/lifecycle/Pausable.sol";
+
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol";
+import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 
 contract BaseCrowdsale is HolderBase, Pausable {
   using SafeMath for uint256;
