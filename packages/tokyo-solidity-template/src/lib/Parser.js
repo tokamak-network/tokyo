@@ -365,7 +365,7 @@ ${ writeTabs(tab2) }goal = _goal;
 ${ writeTabs(tab2) }crowdsaleRatio = _crowdsaleRatio;
 ${ writeTabs(tab2) }vault = MultiHolderVault(_vault);
 ${ writeTabs(tab2) }locker = Locker(_locker);
-${ writeTabs(tab2) }nextTokenOwner = _nextTokenOwner; 
+${ writeTabs(tab2) }nextTokenOwner = _nextTokenOwner;
 `;
 
     // append post contract declaration

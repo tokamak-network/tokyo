@@ -75,7 +75,7 @@ contract AuditFullFeaturesMintableCrowdsale is BaseCrowdsale, MintableBaseCrowds
     crowdsaleRatio = _crowdsaleRatio;
     vault = MultiHolderVault(_vault);
     locker = Locker(_locker);
-    nextTokenOwner = _nextTokenOwner;
+    nextTokenOwner = _nextTokenOwner; 
   }
 }
 

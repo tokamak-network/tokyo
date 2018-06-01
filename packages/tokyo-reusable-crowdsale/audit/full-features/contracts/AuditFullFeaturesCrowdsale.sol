@@ -75,7 +75,7 @@ contract AuditFullFeaturesCrowdsale is BaseCrowdsale, MiniMeBaseCrowdsale, Bonus
     crowdsaleRatio = _crowdsaleRatio;
     vault = MultiHolderVault(_vault);
     locker = Locker(_locker);
-    nextTokenOwner = _nextTokenOwner;
+    nextTokenOwner = _nextTokenOwner; 
   }
 }
 

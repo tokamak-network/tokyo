@@ -11,6 +11,11 @@ export function getLastName(str, delimiter = ".") {
   return str.split(delimiter).slice(-1)[ 0 ];
 }
 
+/**
+ * @notice return parameter for Crowdsale constructor modifier
+ * @param { Object } input tokyo input parsed by tokyo-schema
+ * @param { Number } numTap indentation level
+ */
 export function appendParseFunction(type, argName, index, withType) {
   if (withType) return `${ type } ${ argName }`;
   if (type === "uint") return `parseUint(args[${ index }])`;
@@ -31,7 +36,8 @@ export function flattenArguments(args, startIndex, numTap = 2, withType = true) 
     .map((typeAndPath, i) => {
       const type = typeAndPath[ 0 ];
       const argName = getLastName(typeAndPath[ 1 ]);
-      const value = withType ? argName : appendParseFunction(type, argName, startIndex + i, withType);
+      const value = withType ? argName :
+        appendParseFunction(type, argName, startIndex + i, withType);
 
       return `\n${ writeTabs(numTap) }${ value }`;
     }).join(",");
@@ -48,7 +54,7 @@ export function writeSuperModifier(parentName, args, startIndex) {
 
 /**
  * @param { Array } parentsList names of parent contracts
- * @param { object } constructors set of arguments of constructors
+ * @param { Object } constructors set of arguments of constructors
  */
 export function writeSuperModifiers(parentsList, constructors) {
   const ret = [];
@@ -67,7 +73,9 @@ export function writeSuperModifiers(parentsList, constructors) {
 }
 
 /**
- * @notice write Locker's constructor arguments in migration file
+ * @notice write Locker's constructor arguments in migration template
+ * @param { Object } input tokyo input parsed by tokyo-schema
+ * @param { Number } numTap indentation level
  */
 export function writeMultisigArguments(input, numTap = 3) {
   if (!input.multisig.use_multisig) {
@@ -80,7 +88,9 @@ export function writeMultisigArguments(input, numTap = 3) {
 }
 
 /**
- * @notice write Locker's constructor arguments in migration file
+ * @notice write Locker's constructor arguments in migration template
+ * @param { Object } input tokyo input parsed by tokyo-schema
+ * @param { Number } numTap indentation level
  */
 export function writeLockerArguments(input, numTap = 3) {
   const ret = [];
@@ -113,7 +123,9 @@ ${ writeTabs(numTap - 1) }]`);
 }
 
 /**
- * @notice write Crowdsale's constructor arguments in migration file
+ * @notice write Crowdsale's constructor arguments in migration template
+ * @param { Object } parseResult output of Parser.parse()
+ * @param { Number } numTap indentation level
  */
 export function writeConstructorArguments(parseResult, numTap = 2) {
   const {
@@ -126,6 +138,7 @@ export function writeConstructorArguments(parseResult, numTap = 2) {
   parentsList.forEach((parentName) => {
     const args = constructors[ parentName ];
 
+    // eslint-disable-next-line
     for (const [type, path, value = null] of args) {
       ret.push(`get(data, "${ path }"),`);
     }
@@ -135,15 +148,14 @@ export function writeConstructorArguments(parseResult, numTap = 2) {
 }
 
 /**
- * @notice write Token's constructor arguments in migration file
+ * @notice write Token's constructor arguments in migration template
+ * @param { Object } input tokyo input parsed by tokyo-schema
+ * @param { Number } numTap indentation level
  */
 export function writeTokenArguments(input, numTap = 2) {
   const {
     token: {
       token_type: { is_minime },
-      token_name,
-      token_symbol,
-      decimals,
     },
   } = input;
 
@@ -160,16 +172,6 @@ export function writeTokenArguments(input, numTap = 2) {
 
 export function wrapNewBigNumber(value) {
   return `new BigNumber("${ new BigNumber(value).toFixed(0) }")`;
-}
-
-/**
- * @notice convert argument info to javascript statement
- */
-export function convertArgument(type, path, value = null) {
-  if (!value) return `get(data, "${ path }")`;
-  if (type === "address") return convertAddress(value);
-  if (moment.isDate(value) || moment.isMoment(value)) return wrapNewBigNumber(convertDateString(value));
-  return wrapNewBigNumber(value);
 }
 
 export function convertDateString(v) {
