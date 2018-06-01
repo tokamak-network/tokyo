@@ -1,6 +1,6 @@
 // https://github.com/bitclave/crowdsale/blob/master/contracts/BonusCrowdsale.sol
 
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.24;
 
 import "./BaseCrowdsale.sol";
 import "../zeppelin/ownership/Ownable.sol";
