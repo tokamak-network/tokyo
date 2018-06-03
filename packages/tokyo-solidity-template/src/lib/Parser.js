@@ -27,6 +27,7 @@ export default class Parser {
     });
 
     const meta = {};
+    meta.use_custom_token = input.token.use_custom_token;
 
     const token = f(); // for token contract
     const postToken = f(); // appended to toekn

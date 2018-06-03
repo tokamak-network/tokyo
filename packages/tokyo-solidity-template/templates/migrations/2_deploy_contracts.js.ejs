@@ -15,7 +15,7 @@ const KYC = artifacts.require("./KYC.sol");
 const Vault = artifacts.require("./MultiHolderVault.sol");
 const Locker = artifacts.require("./Locker.sol");
 const Multisig = artifacts.require("./MultiSigWallet.sol");
-const Token = artifacts.require("./<%- helper.getTokenName(parseResult) -%>.sol");
+const Token = artifacts.require("./<%- helper.getTokenName(parseResult, true) -%>.sol");
 const Crowdsale = artifacts.require("./<%- helper.getCrowdsaleName(parseResult) -%>.sol");
 
 module.exports = async function (deployer, network, accounts) {

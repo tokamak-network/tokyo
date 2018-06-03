@@ -190,8 +190,15 @@ export function convertString(str, quote = "\"") {
   return `${ quote }${ str }${ quote }`;
 }
 
-export function getTokenName(parseResult) {
-  return `${ parseResult.meta.projectName }Token`;
+/**
+ * @notice return Token contract name
+ * @param { Object } input tokyo input parsed by tokyo-schema
+ * @param { Object } parseResult output of Parser.parse()
+ * @param { Boolean } migration for migration script
+ */
+export function getTokenName(parseResult, migration = false) {
+  const custom = migration && parseResult.meta.use_custom_token ? "Custom" : "";
+  return `${ parseResult.meta.projectName }${ custom }Token`;
 }
 
 export function getCrowdsaleName(parseResult) {
