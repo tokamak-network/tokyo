@@ -11,7 +11,8 @@
     },
     "token_name": "For Audit",
     "token_symbol": "FA",
-    "decimals": 18
+    "decimals": 18,
+    "use_custom_token": false
   },
   "sale": {
     "max_cap": "4000000000000000000000",

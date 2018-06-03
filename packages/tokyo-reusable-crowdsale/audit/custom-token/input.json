@@ -1,5 +1,5 @@
 {
-  "project_name": "Audit Full Features",
+  "project_name": "Project With Custom Token",
   "token": {
     "token_type": {
       "is_minime": true
@@ -11,8 +11,7 @@
     },
     "token_name": "For Audit",
     "token_symbol": "FA",
-    "decimals": 18,
-    "use_custom_token": false
+    "decimals": 18
   },
   "sale": {
     "max_cap": "4000000000000000000000",
