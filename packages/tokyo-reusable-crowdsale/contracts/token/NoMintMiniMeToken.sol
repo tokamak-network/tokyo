@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "../minime/MiniMeToken.sol";
+import "minimetoken/contracts/MiniMeToken.sol";
 
 /**
  * @title NoMintMiniMeToken
@@ -25,7 +25,7 @@ contract NoMintMiniMeToken is MiniMeToken {
    */
   function finishMinting() public onlyController canMint returns (bool) {
     mintingFinished = true;
-    MintFinished();
+    emit MintFinished();
     return true;
   }
 }

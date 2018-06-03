@@ -1,6 +1,6 @@
 pragma solidity^0.4.18;
 
-import "../minime/MiniMeToken.sol";
+import "minimetoken/contracts/MiniMeToken.sol";
 import "../token/BurnableMiniMeToken.sol";
 
 contract SampleProjectToken is MiniMeToken, BurnableMiniMeToken {

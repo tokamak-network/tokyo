@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "./BaseCrowdsale.sol";
-import "../minime/MiniMeToken.sol";
+import "minimetoken/contracts/MiniMeToken.sol";
 import "../token/NoMintMiniMeToken.sol";
 
 contract MiniMeBaseCrowdsale is BaseCrowdsale {

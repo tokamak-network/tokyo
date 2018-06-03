@@ -131,7 +131,7 @@ ${ writeTabs(tab2) });
     // parse input.token
     if (input.token.token_type.is_minime) {
       token.parentsList.push("MiniMeToken");
-      token.importStatements.push("import \"./base/minime/MiniMeToken.sol\";");
+      token.importStatements.push("import \"minimetoken/contracts/MiniMeToken.sol\";");
 
       if (input.token.token_option.burnable) {
         token.parentsList.push("BurnableMiniMeToken");
