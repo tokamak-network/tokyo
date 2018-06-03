@@ -1,6 +1,6 @@
 pragma solidity^0.4.18;
 
-import "./base/minime/MiniMeToken.sol";
+import "minimetoken/contracts/MiniMeToken.sol";
 import "./base/token/BurnableMiniMeToken.sol";
 import "./base/token/NoMintMiniMeToken.sol";
   
