@@ -7,165 +7,124 @@
     "token_option": {
       "burnable": true,
       "pausable": true,
-      "no_mint_after_sale" : true
+      "no_mint_after_sale": true
     },
-    "token_name": "Sample2 Token",
-    "token_symbol": "ALP",
+    "token_name": "Sample2Token",
+    "token_symbol": "S2T",
     "decimals": 18
   },
   "sale": {
-    "max_cap": "37500000000000000000000",
-    "min_cap": "5000000000000000000000",
-    "start_time": "2018/05/07 16:00:00",
-    "end_time": "2018/06/30 16:00:00",
+    "max_cap": "4000000000000000000000",
+    "min_cap": "1000000000000000000000",
+    "start_time": "2019/05/23 00:00:00",
+    "end_time": "2019/05/27 00:00:00",
     "coeff": "1000",
     "rate": {
       "is_static": false,
-      "base_rate": "200000",
+      "base_rate": "200",
       "bonus": {
         "use_time_bonus": true,
-        "use_amount_bonus": false,
+        "use_amount_bonus": true,
         "time_bonuses": [
           {
-            "bonus_time_stage": "2018/06/14 16:00:00",
-            "bonus_time_ratio": "300"
-          },
-          {
-            "bonus_time_stage": "2018/06/18 16:00:00",
-            "bonus_time_ratio": "200"
-          },
-          {
-            "bonus_time_stage": "2018/06/22 16:00:00",
-            "bonus_time_ratio": "150"
-          },
-          {
-            "bonus_time_stage": "2018/06/26 16:00:00",
+            "bonus_time_stage": "2019/05/24 00:00:00",
             "bonus_time_ratio": "100"
           },
           {
-            "bonus_time_stage": "2018/06/30 16:00:00",
-            "bonus_time_ratio": "0"
+            "bonus_time_stage": "2019/05/26 00:00:00",
+            "bonus_time_ratio": "50"
           }
         ],
-        "amount_bonuses": []
+        "amount_bonuses": [
+          {
+            "bonus_amount_stage": "100000000000000000000",
+            "bonus_amount_ratio": "200"
+          },
+          {
+            "bonus_amount_stage": "10000000000000000000",
+            "bonus_amount_ratio": "100"
+          },
+          {
+            "bonus_amount_stage": "1000000000000000000",
+            "bonus_amount_ratio": "50"
+          }
+        ]
       }
     },
     "distribution": {
       "token": [
         {
           "token_holder": "crowdsale",
-          "token_ratio": "300"
+          "token_ratio": "750"
         },
         {
           "token_holder": "locker",
-          "token_ratio": "100"
+          "token_ratio": "150"
+        },
+        {
+          "token_holder": "0x557678cf28594495ef4b08a6447726f931f8d787",
+          "token_ratio": "50"
         },
         {
           "token_holder": "multisig0",
-          "token_ratio": "200"
-        },
-        {
-          "token_holder": "multisig1",
-          "token_ratio": "200"
-        },
-        {
-          "token_holder": "multisig2",
-          "token_ratio": "200"
+          "token_ratio": "50"
         }
       ],
       "ether": [
         {
-          "ether_holder": "multisig3",
-          "ether_ratio": "330"
+          "ether_holder": "0x557678cf28594495ef4b08a6447726f931f8d787",
+          "ether_ratio": "800"
         },
         {
-          "ether_holder": "multisig4",
-          "ether_ratio": "330"
+          "ether_holder": "0x557678cf28594495ef4b08a6447726f931f8d788",
+          "ether_ratio": "100"
         },
         {
-          "ether_holder": "multisig5",
-          "ether_ratio": "330"
-        },
-        {
-          "ether_holder": "0x603344CEe73C5CeE7186BD6FB15Fc6B0A8b95908",
-          "ether_ratio": "10"
+          "ether_holder": "multisig1",
+          "ether_ratio": "100"
         }
       ]
     },
     "stages": [
       {
-        "start_time": "2018/05/07 16:00:00",
-        "end_time": "2018/06/14 16:00:00",
+        "start_time": "2019/05/23 00:00:00",
+        "end_time": "2019/05/24 00:00:00",
+        "cap_ratio": "200",
+        "max_purchase_limit": "400000000000000000000",
+        "min_purchase_limit": "100000000000000",
+        "kyc": true
+      },
+      {
+        "start_time": "2019/05/25 00:00:00",
+        "end_time": "2019/05/27 00:00:00",
         "cap_ratio": "0",
         "max_purchase_limit": "0",
         "min_purchase_limit": "0",
         "kyc": true
-      },
-      {
-        "start_time": "2018/06/14 16:00:00",
-        "end_time": "2018/06/30 16:00:00",
-        "cap_ratio": "1000",
-        "max_purchase_limit": "1000000000000000000000",
-        "min_purchase_limit": "100000000000000000",
-        "kyc": true
       }
     ],
     "valid_purchase": {
-      "max_purchase_limit": "0",
-      "min_purchase_limit": "0",
-      "block_interval": 5
+      "max_purchase_limit": "2000000000000000000000",
+      "min_purchase_limit": "10000000000000000",
+      "block_interval": 20
     },
-    "new_token_owner": "0x0000000000000000000000000000000000000001"
+    "new_token_owner": "0xcf7b6f1489129c94a98c79e4be659ea111c76397"
   },
   "multisig": {
     "use_multisig": true,
     "infos": [
       {
-        "num_required": 2,
+        "num_required": 1,
         "owners": [
-          "0x0000000000000000000000000000000000000002",
-          "0x0000000000000000000000000000000000000003",
-          "0x0000000000000000000000000000000000000004"
+          "0x557678cf28594495ef4b08a6447726f931f8d787",
+          "0x557678cf28594495ef4b08a6447726f931f8d788"
         ]
       },
       {
-        "num_required": 2,
+        "num_required": 1,
         "owners": [
-          "0x0000000000000000000000000000000000000005",
-          "0x0000000000000000000000000000000000000006",
-          "0x0000000000000000000000000000000000000007"
-        ]
-      },
-      {
-        "num_required": 2,
-        "owners": [
-          "0x0000000000000000000000000000000000000008",
-          "0x0000000000000000000000000000000000000009",
-          "0x000000000000000000000000000000000000000a"
-        ]
-      },
-      {
-        "num_required": 2,
-        "owners": [
-          "0x000000000000000000000000000000000000000b",
-          "0x000000000000000000000000000000000000000c",
-          "0x000000000000000000000000000000000000000d"
-        ]
-      },
-      {
-        "num_required": 2,
-        "owners": [
-          "0x000000000000000000000000000000000000000e",
-          "0x000000000000000000000000000000000000000f",
-          "0x0000000000000000000000000000000000000010"
-        ]
-      },
-      {
-        "num_required": 2,
-        "owners": [
-          "0x0000000000000000000000000000000000000011",
-          "0x0000000000000000000000000000000000000012",
-          "0x0000000000000000000000000000000000000013"
+          "0x557678cf28594495ef4b08a6447726f931f8d789",
+          "0x557678cf28594495ef4b08a6447726f931f8d78a"
         ]
       }
     ]
@@ -174,40 +133,35 @@
     "use_locker": true,
     "beneficiaries": [
       {
-        "address": "0x0000000000000000000000000000000000000014",
-        "ratio": "1000",
-        "is_straight": false,
+        "address": "0x557678cf28594495ef4b08a6447726f931f8d787",
+        "ratio": "200",
+        "is_straight": true,
         "release": [
           {
-            "release_time": "2019/06/30 16:00:00",
+            "release_time": "2019/05/28 00:00:00",
             "release_ratio": "300"
           },
           {
-            "release_time": "2019/10/30 16:00:00",
-            "release_ratio": "400"
+            "release_time": "2019/05/30 00:00:00",
+            "release_ratio": "1000"
+          }
+        ]
+      },
+      {
+        "address": "0x557678cf28594495ef4b08a6447726f931f8d788",
+        "ratio": "800",
+        "is_straight": false,
+        "release": [
+          {
+            "release_time": "2019/05/27 00:00:00",
+            "release_ratio": "200"
           },
           {
-            "release_time": "2020/02/29 16:00:00",
+            "release_time": "2019/05/28 00:00:00",
             "release_ratio": "500"
           },
           {
-            "release_time": "2020/06/30 16:00:00",
-            "release_ratio": "600"
-          },
-          {
-            "release_time": "2020/10/30 16:00:00",
-            "release_ratio": "700"
-          },
-          {
-            "release_time": "2021/02/28 16:00:00",
-            "release_ratio": "800"
-          },
-          {
-            "release_time": "2021/06/30 16:00:00",
-            "release_ratio": "900"
-          },
-          {
-            "release_time": "2021/10/30 16:00:00",
+            "release_time": "2019/05/30 00:00:00",
             "release_ratio": "1000"
           }
         ]

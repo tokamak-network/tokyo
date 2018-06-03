@@ -32,6 +32,8 @@ Uint : __string__ parsed with `bignumber.js` for unsigned integer.
     token_name : String,
     token_symbol : String,
     decimals : Number,
+    use_custom_token: Boolean         // use customized token. token contract will
+                                      // go by "<ProjectName>CustomToken"
   },
   sale : {
     max_cap : Uint, // decimals considered

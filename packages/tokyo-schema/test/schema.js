@@ -46,4 +46,24 @@ describe("Input Schema", () => {
     should.exist(result3.error);
     result3.error.message.should.includes("release ratio");
   });
+
+  describe("#token.use_custom_token", () => {
+    it("should accept if token.use_custom_token is empty", () => {
+      const data = cloneDeep(sampleData1);
+      const result = validate(data);
+
+      should.not.exist(result.error);
+      result.value.token.use_custom_token.should.be.equal(false);
+    });
+
+    it("should accept if token.use_custom_token is set", () => {
+      const data = cloneDeep(sampleData1);
+      data.token.use_custom_token = true;
+
+      const result = validate(data);
+
+      should.not.exist(result.error);
+      result.value.token.use_custom_token.should.be.equal(true);
+    });
+  });
 });
