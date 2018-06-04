@@ -158,8 +158,11 @@ ${ writeTabs(tab2) });
 
       constructors.MiniMeBaseCrowdsale = [["address", "address.token"]];
     } else {
+      token.parentsList.push("CanReclaimToken");
+      token.importStatements.push("import \"openzeppelin-solidity/contracts/ownership/CanReclaimToken.sol\";");
+
       token.parentsList.push("MintableToken");
-      token.importStatements.push("import \"./base/zeppelin/token/MintableToken.sol\";");
+      token.importStatements.push("import \"openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol\";");
 
       crowdsale.parentsList.push("MintableBaseCrowdsale");
       crowdsale.importStatements.push("import \"./base/crowdsale/MintableBaseCrowdsale.sol\";");
@@ -168,12 +171,12 @@ ${ writeTabs(tab2) });
 
       if (input.token.token_option.burnable) {
         token.parentsList.push("BurnableToken");
-        token.importStatements.push("import \"./base/zeppelin/token/BurnableToken.sol\";");
+        token.importStatements.push("import \"openzeppelin-solidity/contracts/token/ERC20/BurnableToken.sol\";");
       }
 
       if (input.token.token_option.pausable) {
         token.parentsList.push("PausableToken");
-        token.importStatements.push("import \"./base/zeppelin/token/PausableToken.sol\";");
+        token.importStatements.push("import \"openzeppelin-solidity/contracts/token/ERC20/PausableToken.sol\";");
       }
 
       if (input.token.token_option.no_mint_after_sale) {
