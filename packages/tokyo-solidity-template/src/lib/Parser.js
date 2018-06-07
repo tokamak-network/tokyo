@@ -352,10 +352,11 @@ ${ writeTabs(tab2) });
     }
 
     codes.crowdsale.init += `
-${ writeTabs(tab2) }require(_endTime >= _startTime);
+${ writeTabs(tab2) }require(_endTime > _startTime);
 ${ writeTabs(tab2) }require(_rate > 0);
 ${ writeTabs(tab2) }require(_cap > 0);
 ${ writeTabs(tab2) }require(_goal > 0);
+${ writeTabs(tab2) }require(_cap > _goal);
 ${ writeTabs(tab2) }require(_crowdsaleRatio > 0);
 ${ writeTabs(tab2) }require(_vault != address(0));
 ${ writeTabs(tab2) }require(_locker != address(0));
