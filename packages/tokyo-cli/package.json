@@ -1,6 +1,6 @@
 {
   "name": "tokyo-cli",
-  "version": "1.1.14",
+  "version": "1.1.15",
   "description": "tokyo project cli made by onther",
   "keyword": [
     "test"
@@ -31,7 +31,7 @@
     "node-plantuml": "^0.5.0",
     "npm": "^5.7.1",
     "tokyo-diagram-generator": "^1.0.3",
-    "tokyo-solidity-template": "^1.1.14",
+    "tokyo-solidity-template": "^1.1.15",
     "tokyo-truffle-flattener": "^1.2.4",
     "yargs": "^11.1.0"
   }
