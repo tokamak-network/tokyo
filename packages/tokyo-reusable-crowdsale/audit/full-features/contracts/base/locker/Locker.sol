@@ -155,6 +155,15 @@ contract Locker is Ownable {
     emit StateChanged(state);
   }
 
+  function getReleaseType(address _beneficiary)
+    public
+    view
+    onlyBeneficiary(_beneficiary)
+    returns (bool)
+  {
+    return releases[_beneficiary].isStraight;
+  }
+
   function getTotalLockedAmounts(address _beneficiary)
     public
     view

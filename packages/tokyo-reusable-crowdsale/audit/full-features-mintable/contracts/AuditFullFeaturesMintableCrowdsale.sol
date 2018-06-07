@@ -58,10 +58,11 @@ contract AuditFullFeaturesMintableCrowdsale is BaseCrowdsale, MintableBaseCrowds
     address _locker = address(args[7]);
     address _nextTokenOwner = address(args[8]);
 
-    require(_endTime >= _startTime);
+    require(_endTime > _startTime);
     require(_rate > 0);
     require(_cap > 0);
     require(_goal > 0);
+    require(_cap > _goal);
     require(_crowdsaleRatio > 0);
     require(_vault != address(0));
     require(_locker != address(0));
