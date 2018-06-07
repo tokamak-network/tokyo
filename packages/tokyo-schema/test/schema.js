@@ -1,7 +1,6 @@
 import BigNumber from "bignumber.js";
 import cloneDeep from "lodash/cloneDeep";
 
-import Joi from "../src/lib/Joi";
 import validate from "../src/index";
 
 const should = require("chai")
@@ -54,6 +53,27 @@ describe("Input Schema", () => {
 
       should.not.exist(result.error);
       result.value.token.use_custom_token.should.be.equal(false);
+    });
+
+    it("should accept if token.use_custom_token is set", () => {
+      const data = cloneDeep(sampleData1);
+      data.token.use_custom_token = true;
+
+      const result = validate(data);
+
+      should.not.exist(result.error);
+      result.value.token.use_custom_token.should.be.equal(true);
+    });
+  });
+
+  describe("#sale.stages", () => {
+    it("should throw if stage time is overlapped", () => {
+      const data = cloneDeep(sampleData1);
+      data.sale.stages[ 0 ].end_time = data.sale.stages[ 1 ].start_time;
+      const result = validate(data);
+
+      should.exist(result.error);
+      result.error.message.should.includes("Stage should not be overlapped.");
     });
 
     it("should accept if token.use_custom_token is set", () => {

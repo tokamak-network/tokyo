@@ -23,11 +23,11 @@ Uint : __string__ parsed with `bignumber.js` for unsigned integer.
   token : {
     token_type : {
       is_minime : Boolean,
-      token_option : {
-        burnable : Boolean,          // self-burnable
-        pausable : Boolean,          // pause token transfer. MiniMe token is pausable as default.
-        no_mint_after_sale: Boolean, // no more token generation after sale
-      }
+    },
+    token_option : {
+      burnable : Boolean,          // self-burnable
+      pausable : Boolean,          // pause token transfer. MiniMe token is pausable as default.
+      no_mint_after_sale: Boolean, // no more token generation after sale
     },
     token_name : String,
     token_symbol : String,
