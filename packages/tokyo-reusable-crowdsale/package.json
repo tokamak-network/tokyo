@@ -1,6 +1,6 @@
 {
   "name": "tokyo-reusable-crowdsale",
-  "version": "1.1.15",
+  "version": "1.1.16",
   "description": "reusable crowdsale contract",
   "main": "truffle-config.js",
   "scripts": {
@@ -32,7 +32,7 @@
     "post-commit": "^0.0.1",
     "rimraf": "^2.6.2",
     "solium": "^1.1.7",
-    "tokyo-schema": "^1.1.4"
+    "tokyo-schema": "^1.1.5"
   },
   "dependencies": {
     "babel-eslint": "^8.1.2",
