@@ -42,10 +42,10 @@ contract("BurnableMiniMeToken", async ([ owner, ...accounts ]) => {
     const beforeBalance = await token.balanceOf(holder);
     const expectedBalance = beforeBalance.sub(burnAmount);
 
-    token.burn(burnAmount, { from: other })
+    await token.burn(burnAmount, { from: other })
       .should.be.rejectedWith(EVMThrow);
 
-    token.burn(burnAmount, { from: holder })
+    await token.burn(burnAmount, { from: holder })
       .should.be.fulfilled;
 
     const afterBalance = await token.balanceOf(holder);
